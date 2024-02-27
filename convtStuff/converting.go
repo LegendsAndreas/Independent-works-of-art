@@ -29,7 +29,11 @@ func main() {
 
 	if convrtFrom == "int" && convrtTo == "float" {
 		convertedValue = intToFloat(enteredValue)
+	} else if convrtFrom == "float" && convrtTo == "int" {
+		convertedValue = floatToInt(enteredValue) // I believe if i make an interface, it can work.
 	}
+
+	fmt.Println(convertedValue)
 
 	// Hey guuuuuuuurl!
 
