@@ -32,33 +32,26 @@ func calculator(op string, num float64, val *float64) {
 		divideFunc(num, &*val)
 	case "^":
 		powerFunc(num, &*val)
+	case "set":
+		setFunc(num, &*val)
+	case "sqrt":
+		sqrtFunc(num, &*val)
 	default:
 		fmt.Println("Invalid use of operator")
 
 	}
 }
 
-func plusFunc(num float64, val *float64) {
-	*val += num
-}
-
-func minusFunc(num float64, val *float64) {
-	*val -= num
-}
-
-func timesFunc(num float64, val *float64) {
-	*val *= num
-}
-
+func plusFunc(num float64, val *float64)  { *val += num }
+func minusFunc(num float64, val *float64) { *val -= num }
+func timesFunc(num float64, val *float64) { *val *= num }
+func powerFunc(num float64, val *float64) { *val = math.Pow(*val, num) }
+func setFunc(num float64, val *float64)   { *val = num }
+func sqrtFunc(num float64, val *float64)  { *val = math.Sqrt(*val) }
 func divideFunc(num float64, val *float64) {
 	if num == 0 {
 		fmt.Println("Cannot divide by zero")
 	} else {
 		*val /= num
 	}
-}
-
-func powerFunc(num float64, val *float64) {
-	// Own power of code:
-	*val = math.Pow(*val, num)
 }
