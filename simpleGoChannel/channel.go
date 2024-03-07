@@ -40,9 +40,13 @@ func goFunc(ch chan int, arr [10]int) {
 }
 
 /*
-Your program runs into a deadlock because it's trying to write to the channel from multiple goroutines but no other goroutines reading from the channel at the same time. Sending to a channel will block until another goroutine receives from the channel. If there's no other goroutine to read from the channel when sending, goroutines will be blocked, causing a deadlock.
+Your program runs into a deadlock because it's trying to write to the channel from multiple goroutines but no other goroutines reading
+from the channel at the same time. Sending to a channel will block until another goroutine receives from the channel. If there's no other
+goroutine to read from the channel when sending, goroutines will be blocked, causing a deadlock.
 */
 
 /*
-By adding a separate goroutine that waits for all send operations to complete and then closes the channel, we can then safely iterate over the channel contents using range in the main goroutine. Additionally, removed unnecessary mutex lock and unlock, as they were not being used correctly and are unnecessary with the usage of channels.
+By adding a separate goroutine that waits for all send operations to complete and then closes the channel, we can then safely iterate over
+the channel contents using range in the main goroutine. Additionally, removed unnecessary mutex lock and unlock, as they were not being used
+correctly and are unnecessary with the usage of channels.
 */
