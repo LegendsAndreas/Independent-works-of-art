@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 )
 
@@ -12,7 +13,11 @@ func main() {
 
 	for operator != "x" {
 		fmt.Print("Enter operation>")
-		fmt.Scan(&operator, &number)
+		_, err := fmt.Scan(&operator, &number)
+		if err != nil {
+			log.Fatal("Input error:", err)
+		}
+
 		calculator(operator, number, &value)
 		fmt.Printf("Current value = %f\n", value)
 	}
