@@ -1,0 +1,5 @@
+package linkedListTrolling
+
+func main() {
+
+}
