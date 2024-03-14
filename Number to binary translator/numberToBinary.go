@@ -3,74 +3,83 @@ package main
 import "fmt"
 
 func main() {
-	var number int = 69
+	var number int = 253
 	fmt.Println(numToBi(number))
-
 }
 
+// numToBi converts a decimal number to its binary representation as a string.
+// If the number is greater than 255 or less than 0, it returns an error message.
 func numToBi(num int) string {
-	binaryStr := ""
-	hun := 128
-	sixtyfour := 64
-	thirtytwo := 32
-	sixteen := 16
-	eight := 8
-	four := 4
-	two := 2
-	one := 1
+	if num > 255 || num < 0 {
+		return "It is a regular 8 byte string buddy, dont go over 255 or below 0."
+	}
 
-	if num >= hun {
+	binaryStr := "" // The binary number that will be returned, as a string.
+
+	digitEight := 128
+	digitSeven := 64
+	digitSix := 32
+	digitFive := 16
+	digitFour := 8
+	digitThree := 4
+	digitTwo := 2
+	digitOne := 1
+
+	// If 'num' is bigger than the appropriate digit, the appropriate digit value will be subtracted from 'num' and
+	// continue to the next digit and a '1' will be added to 'binaryStr'.
+	// Else, a '0' will be added.
+	if num >= digitEight { // 128
 		binaryStr += "1"
-		num -= hun
+		num -= digitEight
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= sixtyfour {
+	if num >= digitSeven { // 64
 		binaryStr += "1"
-		num -= sixtyfour
+		num -= digitSeven
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= thirtytwo {
+	if num >= digitSix { // 32
 		binaryStr += "1"
-		num -= thirtytwo
+		num -= digitSix
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= sixteen {
+	if num >= digitFive { // 16
 		binaryStr += "1"
-		num -= sixteen
+		num -= digitFive
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= eight {
+	if num >= digitFour { // 8
 		binaryStr += "1"
-		num -= eight
+		num -= digitFour
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= four {
+	if num >= digitThree { // 4
 		binaryStr += "1"
-		num -= four
+		num -= digitThree
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= two {
+	if num >= digitTwo { // 2
 		binaryStr += "1"
-		num -= two
+		num -= digitTwo
 	} else {
 		binaryStr += "0"
 	}
 
-	if num >= one {
+	if num >= digitOne { // 1
 		binaryStr += "1"
-		num -= one
+		num -= digitOne
 	} else {
 		binaryStr += "0"
 	}
