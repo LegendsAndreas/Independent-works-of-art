@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	var number int = 253
+	var number int = 240
 	fmt.Println(numToBi(number))
 }
 
