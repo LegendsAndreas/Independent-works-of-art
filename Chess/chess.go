@@ -1,7 +1,10 @@
 // To find our information: https://www.chess.com/article/view/how-to-set-up-a-chessboard#chess-queen
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 // Chess pieces. "b" = black, "w" = white
 var wPAWN = "♟"
@@ -19,23 +22,60 @@ var bKING = "♔"
 
 type square struct {
 	letter string
-	number int
 	color  string
 	piece  *string
 }
 
-type chessPiece struct {
-	name string
-}
-
 func main() {
-
 	var chessBoard []square
 	chessBoard = createBoard(chessBoard)
-	//printBoard(chessBoard)
 	initializePawns(chessBoard)
-	printBoard(chessBoard)
 
+	var startingSquare, endingSquare string
+
+	for{
+		printBoard(chessBoard)
+
+		fmt.Print("Enter move (eg. b2 b4)> ")
+		_, err := fmt.Scan(&startingSquare, &endingSquare)
+		if err != nil {
+			log.Fatal("Input error:", err)
+		}
+
+		// In case the user wants to stop playing, he has to enter x, in which case the loop breaks
+		if startingSquare == "x" || endingSquare == "x" {
+			break
+		}
+
+		// In case a move is not valid, the program prints a message and starts the loop from the beginning.
+		if !moveCheck(startingSquare, endingSquare, chessBoard){
+			fmt.Println("Invalid move. Please try again.")
+			continue
+		}
+
+		chessBoard = move(startingSquare, endingSquare, chessBoard)
+	}
+
+}
+
+func move(startSquare string, endSquare string, board []square) []square {
+	if
+
+	return board
+}
+
+func moveCheck(startSquare string, endSquare string, board []square) bool {
+	var boolshit = true
+
+	if startSquare != "a1" || endSquare != "a1" {
+		boolshit = false
+	} else if startSquare == endSquare{
+		boolshit = false
+	}
+
+
+
+	return boolshit
 }
 
 func initializePawns(board []square) {
@@ -75,6 +115,7 @@ func printBoard(board []square) {
 			fmt.Println(",")
 		}
 
+		// In case a square has a chess piece, it will then print the piece, rather than the square.
 		if board[i].piece == nil {
 			fmt.Printf("%s ", board[i].color)
 		} else {
@@ -89,84 +130,84 @@ func createBoard(board []square) []square {
 	// Unicode: "\u2B1C" creates a white square, "\u2B1B" creates a black square.
 
 	// Row 8
-	board = append(board, square{letter: "a", number: 8, color: "⬜"})
-	board = append(board, square{letter: "b", number: 8, color: "⬛"})
-	board = append(board, square{letter: "c", number: 8, color: "⬜"})
-	board = append(board, square{letter: "d", number: 8, color: "⬛"})
-	board = append(board, square{letter: "e", number: 8, color: "⬜"})
-	board = append(board, square{letter: "f", number: 8, color: "⬛"})
-	board = append(board, square{letter: "g", number: 8, color: "⬜"})
-	board = append(board, square{letter: "h", number: 8, color: "⬛"})
+	board = append(board, square{letter: "a8", color: "⬜"})
+	board = append(board, square{letter: "b8", color: "⬛"})
+	board = append(board, square{letter: "c8", color: "⬜"})
+	board = append(board, square{letter: "d8", color: "⬛"})
+	board = append(board, square{letter: "e8", color: "⬜"})
+	board = append(board, square{letter: "f8", color: "⬛"})
+	board = append(board, square{letter: "g8", color: "⬜"})
+	board = append(board, square{letter: "h8", color: "⬛"})
 
 	// Row 7
-	board = append(board, square{letter: "a", number: 7, color: "⬛"})
-	board = append(board, square{letter: "b", number: 7, color: "⬜"})
-	board = append(board, square{letter: "c", number: 7, color: "⬛"})
-	board = append(board, square{letter: "d", number: 7, color: "⬜"})
-	board = append(board, square{letter: "e", number: 7, color: "⬛"})
-	board = append(board, square{letter: "f", number: 7, color: "⬜"})
-	board = append(board, square{letter: "g", number: 7, color: "⬛"})
-	board = append(board, square{letter: "h", number: 7, color: "⬜"})
+	board = append(board, square{letter: "a7", color: "⬛"})
+	board = append(board, square{letter: "b7", color: "⬜"})
+	board = append(board, square{letter: "c7", color: "⬛"})
+	board = append(board, square{letter: "d7", color: "⬜"})
+	board = append(board, square{letter: "e7", color: "⬛"})
+	board = append(board, square{letter: "f7", color: "⬜"})
+	board = append(board, square{letter: "g7", color: "⬛"})
+	board = append(board, square{letter: "h7", color: "⬜"})
 
 	// Row 6
-	board = append(board, square{letter: "a", number: 6, color: "⬜"})
-	board = append(board, square{letter: "b", number: 6, color: "⬛"})
-	board = append(board, square{letter: "c", number: 6, color: "⬜"})
-	board = append(board, square{letter: "d", number: 6, color: "⬛"})
-	board = append(board, square{letter: "e", number: 6, color: "⬜"})
-	board = append(board, square{letter: "f", number: 6, color: "⬛"})
-	board = append(board, square{letter: "g", number: 6, color: "⬜"})
-	board = append(board, square{letter: "h", number: 6, color: "⬛"})
+	board = append(board, square{letter: "a6", color: "⬜"})
+	board = append(board, square{letter: "b6", color: "⬛"})
+	board = append(board, square{letter: "c6", color: "⬜"})
+	board = append(board, square{letter: "d6", color: "⬛"})
+	board = append(board, square{letter: "e6", color: "⬜"})
+	board = append(board, square{letter: "f6", color: "⬛"})
+	board = append(board, square{letter: "g6", color: "⬜"})
+	board = append(board, square{letter: "h6", color: "⬛"})
 
 	// Row 5
-	board = append(board, square{letter: "a", number: 5, color: "⬛"})
-	board = append(board, square{letter: "b", number: 5, color: "⬜"})
-	board = append(board, square{letter: "c", number: 5, color: "⬛"})
-	board = append(board, square{letter: "d", number: 5, color: "⬜"})
-	board = append(board, square{letter: "e", number: 5, color: "⬛"})
-	board = append(board, square{letter: "f", number: 5, color: "⬜"})
-	board = append(board, square{letter: "g", number: 5, color: "⬛"})
-	board = append(board, square{letter: "h", number: 5, color: "⬜"})
+	board = append(board, square{letter: "a5", color: "⬛"})
+	board = append(board, square{letter: "b5", color: "⬜"})
+	board = append(board, square{letter: "c5", color: "⬛"})
+	board = append(board, square{letter: "d5", color: "⬜"})
+	board = append(board, square{letter: "e5", color: "⬛"})
+	board = append(board, square{letter: "f5", color: "⬜"})
+	board = append(board, square{letter: "g5", color: "⬛"})
+	board = append(board, square{letter: "h5", color: "⬜"})
 
 	// Row 4
-	board = append(board, square{letter: "a", number: 4, color: "⬜"})
-	board = append(board, square{letter: "b", number: 4, color: "⬛"})
-	board = append(board, square{letter: "c", number: 4, color: "⬜"})
-	board = append(board, square{letter: "d", number: 4, color: "⬛"})
-	board = append(board, square{letter: "e", number: 4, color: "⬜"})
-	board = append(board, square{letter: "f", number: 4, color: "⬛"})
-	board = append(board, square{letter: "g", number: 4, color: "⬜"})
-	board = append(board, square{letter: "h", number: 4, color: "⬛"})
+	board = append(board, square{letter: "a4", color: "⬜"})
+	board = append(board, square{letter: "b4", color: "⬛"})
+	board = append(board, square{letter: "c4", color: "⬜"})
+	board = append(board, square{letter: "d4", color: "⬛"})
+	board = append(board, square{letter: "e4", color: "⬜"})
+	board = append(board, square{letter: "f4", color: "⬛"})
+	board = append(board, square{letter: "g4", color: "⬜"})
+	board = append(board, square{letter: "h4", color: "⬛"})
 
 	// Row 3
-	board = append(board, square{letter: "a", number: 3, color: "⬛"})
-	board = append(board, square{letter: "b", number: 3, color: "⬜"})
-	board = append(board, square{letter: "c", number: 3, color: "⬛"})
-	board = append(board, square{letter: "d", number: 3, color: "⬜"})
-	board = append(board, square{letter: "e", number: 3, color: "⬛"})
-	board = append(board, square{letter: "f", number: 3, color: "⬜"})
-	board = append(board, square{letter: "g", number: 3, color: "⬛"})
-	board = append(board, square{letter: "h", number: 3, color: "⬜"})
+	board = append(board, square{letter: "a3", color: "⬛"})
+	board = append(board, square{letter: "b3", color: "⬜"})
+	board = append(board, square{letter: "c3", color: "⬛"})
+	board = append(board, square{letter: "d3", color: "⬜"})
+	board = append(board, square{letter: "e3", color: "⬛"})
+	board = append(board, square{letter: "f3", color: "⬜"})
+	board = append(board, square{letter: "g3", color: "⬛"})
+	board = append(board, square{letter: "h3", color: "⬜"})
 
 	// Row 2
-	board = append(board, square{letter: "a", number: 2, color: "⬜"})
-	board = append(board, square{letter: "b", number: 2, color: "⬛"})
-	board = append(board, square{letter: "c", number: 2, color: "⬜"})
-	board = append(board, square{letter: "d", number: 2, color: "⬛"})
-	board = append(board, square{letter: "e", number: 2, color: "⬜"})
-	board = append(board, square{letter: "f", number: 2, color: "⬛"})
-	board = append(board, square{letter: "g", number: 2, color: "⬜"})
-	board = append(board, square{letter: "h", number: 2, color: "⬛"})
+	board = append(board, square{letter: "a2", color: "⬜"})
+	board = append(board, square{letter: "b2", color: "⬛"})
+	board = append(board, square{letter: "c2", color: "⬜"})
+	board = append(board, square{letter: "d2", color: "⬛"})
+	board = append(board, square{letter: "e2", color: "⬜"})
+	board = append(board, square{letter: "f2", color: "⬛"})
+	board = append(board, square{letter: "g2", color: "⬜"})
+	board = append(board, square{letter: "h2", color: "⬛"})
 
 	// Row 1
-	board = append(board, square{letter: "a", number: 1, color: "⬛"})
-	board = append(board, square{letter: "b", number: 1, color: "⬜"})
-	board = append(board, square{letter: "c", number: 1, color: "⬛"})
-	board = append(board, square{letter: "d", number: 1, color: "⬜"})
-	board = append(board, square{letter: "e", number: 1, color: "⬛"})
-	board = append(board, square{letter: "f", number: 1, color: "⬜"})
-	board = append(board, square{letter: "g", number: 1, color: "⬛"})
-	board = append(board, square{letter: "h", number: 1, color: "⬜"})
+	board = append(board, square{letter: "a1", color: "⬛"})
+	board = append(board, square{letter: "b1", color: "⬜"})
+	board = append(board, square{letter: "c1", color: "⬛"})
+	board = append(board, square{letter: "d1", color: "⬜"})
+	board = append(board, square{letter: "e1", color: "⬛"})
+	board = append(board, square{letter: "f1", color: "⬜"})
+	board = append(board, square{letter: "g1", color: "⬛"})
+	board = append(board, square{letter: "h1", color: "⬜"})
 
 	return board
 }
