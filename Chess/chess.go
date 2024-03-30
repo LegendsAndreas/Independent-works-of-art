@@ -25,13 +25,13 @@ var bKING = "♔"
 // - `color`: the color of the square (e.g., "white", "black").
 // - `piece`: a pointer to the chess piece on the square. Set to `nil` if the square is empty.
 type square struct {
-	letter string
-	color  string
-	piece  *string
+	letter         string
+	color          string
+	gridCoordinate []int
+	piece          *string
 }
 
 // After careful consideration and thought, i have come to the realization that i should have used map of some kind.
-// I have to loop though the
 func main() {
 	// Our chess board, as an array of squares.
 	var chessBoard []square
@@ -162,9 +162,15 @@ func initializePieces(board []square) {
 // The board parameter is an array of squares representing the chess board.
 func printBoard(board []square) {
 	// There HAS to be a comma when we print the new line and a space when we print, otherwise the squares that we print will not be formatted correctly.
+	numRow := 7
+	fmt.Print("8") // We simply print out 8 at the beginning to make sure the code works later on.
 	for i := 0; i < len(board); i++ {
+
+		// Once a row has been created, which is 8 in length, we print out a comma with a newline to format it correctly, and then print out what which number row it is, starting from the top, down to 1.
 		if i%8 == 0 && i > 0 {
 			fmt.Println(",")
+			fmt.Print(numRow)
+			numRow--
 		}
 
 		// In case a square has a chess piece, it will then print the piece, rather than the square.
@@ -174,7 +180,8 @@ func printBoard(board []square) {
 			fmt.Printf("%s ", *board[i].piece)
 		}
 	}
-	println(",")
+	fmt.Println(",")
+	fmt.Println(" a b c d e f g h") // The letter rows gets printed out.
 }
 
 // createBoard generates a chess board with the appropriate letters and colors.
@@ -263,6 +270,29 @@ func createBoard(board []square) []square {
 	board = append(board, square{letter: "f1", color: "⬜"})
 	board = append(board, square{letter: "g1", color: "⬛"})
 	board = append(board, square{letter: "h1", color: "⬜"})
+
+	// Our grid system goes from the bottom left to right and then upwards. We start from 1,1 to 1,2... 1,8 to 2,1 to 2,2...
+	row := 1
+	colom := 8
+	for i := len(board) - 1; i >= 0; i-- {
+		board[i].gridCoordinate = append(board[i].gridCoordinate, row, colom)
+		colom--
+
+		if i%8 == 0 {
+			row++
+			colom = 8
+		}
+	}
+
+	// Prints the grid coordinates of the board.
+	for i := range board {
+		if i%8 == 0 && i > 0 {
+			fmt.Println()
+		}
+		fmt.Print(board[i].gridCoordinate)
+	}
+
+	fmt.Println()
 
 	return board
 }
