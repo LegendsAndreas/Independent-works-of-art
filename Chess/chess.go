@@ -96,35 +96,66 @@ func move(startSquare string, endSquare string, board []square) []square {
 }
 
 func moveCheck(startSquare string, endSquare string, board []square) bool {
-	// If the entered squares exists, the bool is true.
+	// If both square are equal to each other, we return false.
+	if startSquare == endSquare {
+		return false
+	}
+
+	// Checks if the starting square exists.
 	var sSquare bool
-	var eSquare bool
-	for _, sq := range board { // Checks if the starting square exists.
+	var sPiece square // Assuming that the starting square exists, sPiece will be assigned the value of the board where the square exists.
+	for i, sq := range board {
 		if sq.letter == startSquare {
 			sSquare = true
+			sPiece = board[i] // Will be used later on for the validMovement function.
 		}
 	}
 
-	for _, eq := range board { // Checks if the ending square exists.
+	// Checks if the ending square exists.
+	var eSquare bool
+	var ePiece square
+	for i, eq := range board {
 		if eq.letter == endSquare {
 			eSquare = true
+			ePiece = board[i] // Will be used later on for the validMovement function.
 		}
 	}
 
-	// If both entered squares exists, the boolshit will be true.
-	// If that is not the case, we prematurely return the boolshit as false.
-	var boolshit = false
-	if sSquare && eSquare {
-		boolshit = true
-	} else {
-		return boolshit
+	// If either of the entered squares does not exist, we return false.
+	if !sSquare || !eSquare {
+		return false
+	}
+	// If the user enters a pattern that is not supported by the appropriate piece, we return false.
+	if !validMovement(sPiece, ePiece, board) {
+		return false
 	}
 
-	if startSquare == endSquare { // If both square are equal to each other, we set boolshit to be false.
-		boolshit = false
+	return true
+}
+
+func validMovement(startPiece square, endingPiece square, board []square) bool {
+	if *startPiece.piece == "♟" || *startPiece.piece == "♙" { // Code for Pawn
+		fmt.Println("Pawn")
+	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
+		var gridX = startPiece.gridCoordinate[1]
+		var gridY = startPiece.gridCoordinate[0]
+		for {
+			// While grid x and y is more than 0, this program will execute.
+			if gridX < 1 || gridY < 1 {
+				break
+			}
+		}
+	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" { // Code for Knight
+		fmt.Println("Knight")
+	} else if *startPiece.piece == "♝" || *startPiece.piece == "♗" { // Code for Bishop
+		fmt.Println("Bishop")
+	} else if *startPiece.piece == "♛" || *startPiece.piece == "♕" { // Code for Queen
+		fmt.Println("Queen")
+	} else if *startPiece.piece == "♚" || *startPiece.piece == "♔" { // Code for King
+		fmt.Println("King")
 	}
 
-	return boolshit
+	return true
 }
 
 // initializePieces sets the chess pieces to their appropriate starting squares on the chess board.
@@ -165,14 +196,12 @@ func printBoard(board []square) {
 	numRow := 7
 	fmt.Print("8") // We simply print out 8 at the beginning to make sure the code works later on.
 	for i := 0; i < len(board); i++ {
-
 		// Once a row has been created, which is 8 in length, we print out a comma with a newline to format it correctly, and then print out what which number row it is, starting from the top, down to 1.
 		if i%8 == 0 && i > 0 {
 			fmt.Println(",")
 			fmt.Print(numRow)
 			numRow--
 		}
-
 		// In case a square has a chess piece, it will then print the piece, rather than the square.
 		if board[i].piece == nil {
 			fmt.Printf("%s ", board[i].color)
