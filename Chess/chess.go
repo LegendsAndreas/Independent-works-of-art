@@ -102,7 +102,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	}
 
 	// Checks if the starting square exists.
-	var sSquare bool
+	var sSquare = false
 	var sPiece square // Assuming that the starting square exists, sPiece will be assigned the value of the board where the square exists.
 	for i, sq := range board {
 		if sq.letter == startSquare {
@@ -112,7 +112,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	}
 
 	// Checks if the ending square exists.
-	var eSquare bool
+	var eSquare = false
 	var ePiece square
 	for i, eq := range board {
 		if eq.letter == endSquare {
@@ -125,6 +125,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	if !sSquare || !eSquare {
 		return false
 	}
+
 	// If the user enters a pattern that is not supported by the appropriate piece, we return false.
 	if !validMovement(sPiece, ePiece, board) {
 		return false
@@ -134,17 +135,20 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 }
 
 func validMovement(startPiece square, endingPiece square, board []square) bool {
+	var gridX = startPiece.gridCoordinate[1]
+	var gridY = startPiece.gridCoordinate[0]
+
 	if *startPiece.piece == "♟" || *startPiece.piece == "♙" { // Code for Pawn
 		fmt.Println("Pawn")
 	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
-		var gridX = startPiece.gridCoordinate[1]
-		var gridY = startPiece.gridCoordinate[0]
-		for {
-			// While grid x and y is more than 0, this program will execute.
-			if gridX < 1 || gridY < 1 {
-				break
-			}
+		// For the Rook, we can just return true, if one of the four or conditions are met, since the movement of the Rook is very strict.
+		if (gridY > endingPiece.gridCoordinate[0] && gridX == endingPiece.gridCoordinate[1]) || // The Rook moves up.
+			(gridY == endingPiece.gridCoordinate[0] && gridX > endingPiece.gridCoordinate[1]) || // The Rook moves right
+			(gridY < endingPiece.gridCoordinate[0] && gridX == endingPiece.gridCoordinate[1]) || // The Rook moves down.
+			(gridY == endingPiece.gridCoordinate[0] && gridX < endingPiece.gridCoordinate[1]) { // The Rook moves left.
+			return true
 		}
+
 	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" { // Code for Knight
 		fmt.Println("Knight")
 	} else if *startPiece.piece == "♝" || *startPiece.piece == "♗" { // Code for Bishop
@@ -155,7 +159,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		fmt.Println("King")
 	}
 
-	return true
+	return false
 }
 
 // initializePieces sets the chess pieces to their appropriate starting squares on the chess board.
