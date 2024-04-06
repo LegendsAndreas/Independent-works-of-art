@@ -135,24 +135,64 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 }
 
 func validMovement(startPiece square, endingPiece square, board []square) bool {
-	var gridX = startPiece.gridCoordinate[1]
-	var gridY = startPiece.gridCoordinate[0]
+	// We check the movement of the piece, by comparing the starting position to the ending position.
+	var startingGridX = startPiece.gridCoordinate[1]
+	var startingGridY = startPiece.gridCoordinate[0]
+	var endingGridX = endingPiece.gridCoordinate[1]
+	var endingGridY = endingPiece.gridCoordinate[0]
+	fmt.Println(startingGridX, startingGridY, endingGridX, endingGridY)
 
 	if *startPiece.piece == "♟" || *startPiece.piece == "♙" { // Code for Pawn
 		fmt.Println("Pawn")
 	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
 		// For the Rook, we can just return true, if one of the four or conditions are met, since the movement of the Rook is very strict.
-		if (gridY > endingPiece.gridCoordinate[0] && gridX == endingPiece.gridCoordinate[1]) || // The Rook moves up.
-			(gridY == endingPiece.gridCoordinate[0] && gridX > endingPiece.gridCoordinate[1]) || // The Rook moves right
-			(gridY < endingPiece.gridCoordinate[0] && gridX == endingPiece.gridCoordinate[1]) || // The Rook moves down.
-			(gridY == endingPiece.gridCoordinate[0] && gridX < endingPiece.gridCoordinate[1]) { // The Rook moves left.
+		if (startingGridY < endingGridY && startingGridX == endingGridX) || // The Rook moves up.
+			(startingGridY == endingGridY && startingGridX < endingGridX) || // The Rook moves right
+			(startingGridY > endingGridY && startingGridX == endingGridX) || // The Rook moves down.
+			(startingGridY == endingGridY && startingGridX > endingGridX) { // The Rook moves left.
 			return true
 		}
 
 	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" { // Code for Knight
 		fmt.Println("Knight")
 	} else if *startPiece.piece == "♝" || *startPiece.piece == "♗" { // Code for Bishop
-		fmt.Println("Bishop")
+
+		if startingGridY < endingGridY && startingGridX > endingGridX { // The Bishop moves up-left.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX++
+				endingGridY--
+			}
+
+		} else if startingGridY < endingGridY && startingGridX < endingGridX { // The Bishop moves up-right.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX--
+				endingGridY--
+			}
+
+		} else if startingGridY > endingGridY && startingGridX < endingGridX { // The Bishop moves down-right.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX--
+				endingGridY++
+			}
+
+		} else if startingGridY > endingGridY && startingGridX > endingGridX { // The Bishop moves down-left
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX++
+				endingGridY++
+			}
+		}
 	} else if *startPiece.piece == "♛" || *startPiece.piece == "♕" { // Code for Queen
 		fmt.Println("Queen")
 	} else if *startPiece.piece == "♚" || *startPiece.piece == "♔" { // Code for King
