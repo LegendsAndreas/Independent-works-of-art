@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 )
 
 // Chess pieces. "b" = black, "w" = white
@@ -143,7 +144,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 	fmt.Println(startingGridX, startingGridY, endingGridX, endingGridY)
 
 	if *startPiece.piece == "♟" || *startPiece.piece == "♙" { // Code for Pawn
-		fmt.Println("Pawn")
+
 	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
 		// For the Rook, we can just return true, if one of the four or conditions are met, since the movement of the Rook is very strict.
 		if (startingGridY < endingGridY && startingGridX == endingGridX) || // The Rook moves up.
@@ -193,10 +194,59 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 				endingGridY++
 			}
 		}
+
 	} else if *startPiece.piece == "♛" || *startPiece.piece == "♕" { // Code for Queen
-		fmt.Println("Queen")
+		// For the Queen, we can check if the movement is valid by combining the movement of the Rook and the Bishop.
+		// If the move is equal to any of the Rooks moves, we return true right away, as we did with the Rook itself.
+		if (startingGridY < endingGridY && startingGridX == endingGridX) || // The Queen moves up.
+			(startingGridY == endingGridY && startingGridX < endingGridX) || // The Queen moves right
+			(startingGridY > endingGridY && startingGridX == endingGridX) || // The Queen moves down.
+			(startingGridY == endingGridY && startingGridX > endingGridX) { // The Queen moves left.
+			return true
+
+			// The Queens moves for the Bishop movements are calculated the same way.
+		} else if startingGridY < endingGridY && startingGridX > endingGridX { // The Queen moves up-left.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX++
+				endingGridY--
+			}
+
+		} else if startingGridY < endingGridY && startingGridX < endingGridX { // The Queen moves up-right.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX--
+				endingGridY--
+			}
+
+		} else if startingGridY > endingGridY && startingGridX < endingGridX { // The Queen moves down-right.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX--
+				endingGridY++
+			}
+
+		} else if startingGridY > endingGridY && startingGridX > endingGridX { // The Queen moves down-left
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX++
+				endingGridY++
+			}
+		}
 	} else if *startPiece.piece == "♚" || *startPiece.piece == "♔" { // Code for King
-		fmt.Println("King")
+		// For the King, we can return true if the absolute difference between the starting and ending grid coordinates is less than or equal to 1 in both the x and y directions.
+		// We also have to turn the startingGrid values into floats, because the math.Absolute function only accepts floats.
+		if math.Abs(float64(startingGridX)-float64(endingGridX)) <= 1 && math.Abs(float64(startingGridY)-float64(endingGridY)) <= 1 {
+			return true
+		}
 	}
 
 	return false
