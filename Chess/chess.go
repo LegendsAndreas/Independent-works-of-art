@@ -78,8 +78,8 @@ func main() {
 func move(startSquare string, endSquare string, board []square) []square {
 	var startIdx int
 	var endIdx int
-	// Loops though the entire array, and when it finds the index at which the startSquare or the endSquare presides,
-	// it sets startIdx and endIdx to be equal to that array index.
+	// Loops though the entire array, and when it finds the index at which the startSquare or the endSquare presides, it sets startIdx and endIdx to be equal to that array index.
+	// Would have been a lot easier if I had just used a map.
 	for i, sq := range board {
 		if sq.letter == startSquare {
 			startIdx = i
@@ -99,6 +99,7 @@ func move(startSquare string, endSquare string, board []square) []square {
 func moveCheck(startSquare string, endSquare string, board []square) bool {
 	// If both square are equal to each other, we return false.
 	if startSquare == endSquare {
+		fmt.Println("The starting square is the same as the ending square!")
 		return false
 	}
 
@@ -124,11 +125,13 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 
 	// If either of the entered squares does not exist, we return false.
 	if !sSquare || !eSquare {
+		fmt.Println("One or both of the entered squares does not exist!")
 		return false
 	}
 
 	// If the user enters a pattern that is not supported by the appropriate piece, we return false.
 	if !validMovement(sPiece, ePiece, board) {
+		fmt.Println("That move is not valid!")
 		return false
 	}
 
@@ -137,13 +140,29 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 
 func validMovement(startPiece square, endingPiece square, board []square) bool {
 	// We check the movement of the piece, by comparing the starting position to the ending position.
+	// startingGridX/Y is equal to the coordinates for where the piece started.
+	// endingGridX/Y is equal to the coordinates for the piece moves to.
 	var startingGridX = startPiece.gridCoordinate[1]
 	var startingGridY = startPiece.gridCoordinate[0]
 	var endingGridX = endingPiece.gridCoordinate[1]
 	var endingGridY = endingPiece.gridCoordinate[0]
 	fmt.Println(startingGridX, startingGridY, endingGridX, endingGridY)
 
-	if *startPiece.piece == "♟" || *startPiece.piece == "♙" { // Code for Pawn
+	// ToDo Turns the Pawn into a Queen.
+	if *startPiece.piece == "♟" { // Code for White Pawn
+		// If a pawn moves diagonally and the square it moves to does not have a piece, it returns false.
+		if endingPiece.piece == nil && (startingGridX > endingGridX || startingGridX < endingGridX) {
+			fmt.Println("There is no piece for the Pawn to capture!")
+			return false
+		}
+
+		if startingGridY == 2 && endingGridY == 4 && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves 2 squares up from the start, assuming that the ending square is empty.
+			return true
+		} else if startingGridY+1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves up once, assuming that the square ahead of it is empty.
+			return true
+		}
+
+	} else if *startPiece.piece == "♙" { // Code for Black Pawn
 
 	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
 		// For the Rook, we can just return true, if one of the four or conditions are met, since the movement of the Rook is very strict.
@@ -204,7 +223,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			(startingGridY == endingGridY && startingGridX > endingGridX) { // The Queen moves left.
 			return true
 
-			// The Queens moves for the Bishop movements are calculated the same way.
+			// The Queens moves for the Bishop movements are calculated the exact same way as the Bishop.
 		} else if startingGridY < endingGridY && startingGridX > endingGridX { // The Queen moves up-left.
 			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
 				if startingGridX == endingGridX && startingGridY == endingGridY {
@@ -241,6 +260,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 				endingGridY++
 			}
 		}
+
 	} else if *startPiece.piece == "♚" || *startPiece.piece == "♔" { // Code for King
 		// For the King, we can return true if the absolute difference between the starting and ending grid coordinates is less than or equal to 1 in both the x and y directions.
 		// We also have to turn the startingGrid values into floats, because the math.Absolute function only accepts floats.
