@@ -169,6 +169,17 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		}
 
 	} else if *startPiece.piece == "♙" { // Code for Black Pawn
+		// If a pawn moves diagonally and the square it moves to does not have a piece, it returns false.
+		if endingPiece.piece == nil && (startingGridX > endingGridX || startingGridX < endingGridX) {
+			fmt.Println("There is no piece for the Pawn to capture!")
+			return false
+		}
+
+		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves 2 squares down from the start, assuming that the ending square is empty.
+			return true
+		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves down once, assuming that the square ahead of it is empty.
+			return true
+		}
 
 	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
 		// For the Rook, we can just return true, if one of the four or conditions are met, since the movement of the Rook is very strict.
