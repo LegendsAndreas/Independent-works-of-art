@@ -44,10 +44,14 @@ func main() {
 	// 'startingSquare' represents the square with the chess piece that the user wants to move.
 	// 'endingSquare' represents the square that the user wants to move their piece to.
 	var startingSquare, endingSquare string
+
 	// The loop for our chess game.
 	for {
+		// Prints both the initiated board and updated board.
 		printBoard(chessBoard)
 
+		// Asks the user for which piece he/she wants to move and where he/she want to move that piece to.
+		// This is done by the user typing 2 squares, the starting square and the ending square.
 		fmt.Print("Enter move (eg. b2 b4)> ")
 		_, err := fmt.Scan(&startingSquare, &endingSquare)
 		if err != nil {
@@ -65,6 +69,7 @@ func main() {
 			continue
 		}
 
+		// Moves the piece, assuming that the move is valid. This functions job is to ONLY move a piece.
 		chessBoard = move(startingSquare, endingSquare, chessBoard)
 	}
 
@@ -135,6 +140,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 		return false
 	}
 
+	// Assuming that we get no return false statements anywhere, we can return true.
 	return true
 }
 
