@@ -32,7 +32,7 @@ type square struct {
 	piece          *string
 }
 
-// After careful consideration and thought, i have come to the realization that i should have used map of some kind.
+// After careful consideration and thought, I have come to the realization that I should have used a map of some kind.
 func main() {
 	// Our chess board, as an array of squares.
 	var chessBoard []square
@@ -136,7 +136,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 
 	// If the user enters a pattern that is not supported by the appropriate piece, we return false.
 	if !validMovement(sPiece, ePiece, board) {
-		fmt.Println("That move is not valid!")
+		fmt.Println("Wrong movement")
 		return false
 	}
 
@@ -180,7 +180,12 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		}
 
 	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" { // Code for Knight
-		fmt.Println("Knight")
+		// For the Knight, we can return true if the absolute difference between the starting and ending grid coordinates is 2 in one direction and 1 in the other direction. The math.Abs function only accepts floats, so we convert them.
+		if (math.Abs(float64(startingGridX)-float64(endingGridX)) == 2 && math.Abs(float64(startingGridY)-float64(endingGridY)) == 1) ||
+			(math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && math.Abs(float64(startingGridY)-float64(endingGridY)) == 2) {
+			return true
+		}
+		// Fucking genius.
 	} else if *startPiece.piece == "♝" || *startPiece.piece == "♗" { // Code for Bishop
 
 		if startingGridY < endingGridY && startingGridX > endingGridX { // The Bishop moves up-left.
