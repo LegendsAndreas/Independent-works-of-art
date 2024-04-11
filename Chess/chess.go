@@ -164,7 +164,12 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 
 		if startingGridY == 2 && endingGridY == 4 && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves 2 squares up from the start, assuming that the ending square is empty.
 			return true
+		} else if startingGridY+1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either up-left or up-right, assuming that the ending square is not empty.
+			return true
 		} else if startingGridY+1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves up once, assuming that the square ahead of it is empty.
+			if startPiece.letter == "b8" { // Does not work, since it will only be changed in this entire function.
+				*startPiece.piece = "♛"
+			}
 			return true
 		}
 
@@ -175,9 +180,11 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			return false
 		}
 
-		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves 2 squares down from the start, assuming that the ending square is empty.
+		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves 2 squares down from the start, assuming that the ending square is empty.
 			return true
-		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves down once, assuming that the square ahead of it is empty.
+		} else if startingGridY-1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either down-left or down-right, assuming that the ending square is not empty.
+			return true
+		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves down once, assuming that the square ahead of it is empty.
 			return true
 		}
 
