@@ -41,9 +41,9 @@ func main() {
 	// Set the chess pieces to be at their appropriate starting squares.
 	initializePieces(chessBoard)
 
-	// 'startingSquare' represents the square with the chess piece that the user wants to move.
-	// 'endingSquare' represents the square that the user wants to move their piece to.
-	var startingSquare, endingSquare string
+	// 'startingSquareLetter' represents the square with the chess piece that the user wants to move.
+	// 'endingSquareLetter' represents the square that the user wants to move their piece to.
+	var startingSquareLetter, endingSquareLetter string
 
 	// The loop for our chess game.
 	for {
@@ -53,24 +53,24 @@ func main() {
 		// Asks the user for which piece he/she wants to move and where he/she want to move that piece to.
 		// This is done by the user typing 2 squares, the starting square and the ending square.
 		fmt.Print("Enter move (eg. b2 b4)> ")
-		_, err := fmt.Scan(&startingSquare, &endingSquare)
+		_, err := fmt.Scan(&startingSquareLetter, &endingSquareLetter)
 		if err != nil {
 			log.Fatal("Input error:", err)
 		}
 
 		// In case the user wants to stop playing, he has to enter x, in which case the loop breaks
-		if startingSquare == "x" || endingSquare == "x" {
+		if startingSquareLetter == "x" || endingSquareLetter == "x" {
 			break
 		}
 
 		// In case a move is not valid, the program prints a message and starts the loop from the beginning.
-		if !moveCheck(startingSquare, endingSquare, chessBoard) {
+		if !moveCheck(startingSquareLetter, endingSquareLetter, chessBoard) {
 			fmt.Println("Invalid move. Please try again.")
 			continue
 		}
 
 		// Moves the piece, assuming that the move is valid. This functions job is to ONLY move a piece.
-		chessBoard = move(startingSquare, endingSquare, chessBoard)
+		chessBoard = move(startingSquareLetter, endingSquareLetter, chessBoard)
 	}
 
 }
@@ -134,6 +134,12 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 		return false
 	}
 
+	// If the starting square (startSquare) does not have a piece in it, we return false.
+	if sPiece.piece == nil {
+		fmt.Println("The starting square does not have a piece!")
+		return false
+	}
+
 	// If the user enters a pattern that is not supported by the appropriate piece, we return false.
 	if !validMovement(sPiece, ePiece, board) {
 		fmt.Println("Wrong movement")
@@ -144,6 +150,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	return true
 }
 
+// I think i have to go through the board, until i find the corresponding index at the startPiece, then change it there.
 func validMovement(startPiece square, endingPiece square, board []square) bool {
 	// We check the movement of the piece, by comparing the starting position to the ending position.
 	// startingGridX/Y is equal to the coordinates for where the piece started.
@@ -165,10 +172,17 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		if startingGridY == 2 && endingGridY == 4 && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves 2 squares up from the start, assuming that the ending square is empty.
 			return true
 		} else if startingGridY+1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either up-left or up-right, assuming that the ending square is not empty.
+
+			if endingGridY == 8 {
+				newQueen := "♛"
+				startPiece.piece = &newQueen
+			}
 			return true
 		} else if startingGridY+1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves up once, assuming that the square ahead of it is empty.
-			if startPiece.letter == "b8" { // Does not work, since it will only be changed in this entire function.
-				*startPiece.piece = "♛"
+
+			if endingGridY == 8 {
+				newQueen := "♛"
+				startPiece.piece = &newQueen
 			}
 			return true
 		}
@@ -183,8 +197,14 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves 2 squares down from the start, assuming that the ending square is empty.
 			return true
 		} else if startingGridY-1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either down-left or down-right, assuming that the ending square is not empty.
+			if endingGridY == 1 {
+				*startPiece.piece = "♕"
+			}
 			return true
 		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves down once, assuming that the square ahead of it is empty.
+			if endingGridY == 1 {
+				*startPiece.piece = "♕"
+			}
 			return true
 		}
 
