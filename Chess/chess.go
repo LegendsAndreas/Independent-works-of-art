@@ -60,6 +60,7 @@ func main() {
 
 		// In case the user wants to stop playing, he has to enter x, in which case the loop breaks
 		if startingSquareLetter == "x" || endingSquareLetter == "x" {
+			fmt.Println("You have chosen to end the game! :(")
 			break
 		}
 
@@ -159,7 +160,6 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 	var startingGridY = startPiece.gridCoordinate[0]
 	var endingGridX = endingPiece.gridCoordinate[1]
 	var endingGridY = endingPiece.gridCoordinate[0]
-	fmt.Println(startingGridX, startingGridY, endingGridX, endingGridY)
 
 	// ToDo Turns the Pawn into a Queen.
 	if *startPiece.piece == "♟" { // Code for White Pawn
@@ -173,17 +173,29 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			return true
 		} else if startingGridY+1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either up-left or up-right, assuming that the ending square is not empty.
 
+			// This piece of code checks if the pawn is at the end of the board. In which case, it will become a Queen.
 			if endingGridY == 8 {
-				newQueen := "♛"
-				startPiece.piece = &newQueen
+				for i := range board {
+					if board[i].letter == startPiece.letter {
+						board[i].piece = &wQUEEN
+						return true
+					}
+				}
 			}
+
 			return true
 		} else if startingGridY+1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves up once, assuming that the square ahead of it is empty.
 
+			// This piece of code checks if the pawn is at the end of the board. In which case, it will become a Queen.
 			if endingGridY == 8 {
-				newQueen := "♛"
-				startPiece.piece = &newQueen
+				for i := range board {
+					if board[i].letter == startPiece.letter {
+						board[i].piece = &wQUEEN
+						return true
+					}
+				}
 			}
+
 			return true
 		}
 
@@ -197,13 +209,28 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves 2 squares down from the start, assuming that the ending square is empty.
 			return true
 		} else if startingGridY-1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either down-left or down-right, assuming that the ending square is not empty.
+
+			// This piece of code checks if the black pawn is at the end of the board. In which case, it will become a black Queen.
 			if endingGridY == 1 {
-				*startPiece.piece = "♕"
+				for i := range board {
+					if board[i].letter == startPiece.letter {
+						board[i].piece = &bQUEEN
+						return true // The loop ends prematurely when the appropriate square is found, so we don't have to go through more than we need to.
+					}
+				}
 			}
+
 			return true
 		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves down once, assuming that the square ahead of it is empty.
+
+			// This piece of code checks if the black pawn is at the end of the board. In which case, it will become a black Queen.
 			if endingGridY == 1 {
-				*startPiece.piece = "♕"
+				for i := range board {
+					if board[i].letter == startPiece.letter {
+						board[i].piece = &bQUEEN
+						return true // The loop ends prematurely when the appropriate square is found, so we don't have to go through more than we need to.
+					}
+				}
 			}
 			return true
 		}
