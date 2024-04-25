@@ -70,6 +70,8 @@ func main() {
 			continue
 		}
 
+		// ToDO Make a Goroutine, where two functions look if the Black or White Queen is still alive.
+
 		// Moves the piece, assuming that the move is valid. This functions job is to ONLY move a piece.
 		chessBoard = move(startingSquareLetter, endingSquareLetter, chessBoard)
 	}
@@ -205,7 +207,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		}
 
 		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves 2 squares down from the start, assuming that the ending square is empty.
-			if hasPiece(startingGridX, startingGridY-1, board) {
+			if hasPiece(startingGridX, startingGridY-1, board) { // We look at the square +1 ahead of the pawn and of there is a piece in the way, we truen false.
 				fmt.Println("The path you chose for the White Pawn, has a piece in it's way!")
 				return false
 			}
@@ -602,4 +604,22 @@ func createBoard(board []square) []square {
 	fmt.Println()
 
 	return board
+}
+
+func isWhiteQueenAlive(board []square) bool {
+	for i := range board {
+		if *board[i].piece == wQUEEN {
+			return true
+		}
+	}
+	return false
+}
+
+func isBlackQueenAlive(board []square) bool {
+	for i := range board {
+		if *board[i].piece == bQUEEN {
+			return true
+		}
+	}
+	return false
 }
