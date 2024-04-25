@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"sync"
 )
 
 // Chess pieces. "b" = black, "w" = white
@@ -32,6 +33,8 @@ type square struct {
 	piece          *string
 }
 
+var wg sync.WaitGroup
+
 // After careful consideration and thought, I have come to the realization that I should have used a map of some kind.
 func main() {
 	// Our chess board, as an array of squares.
@@ -44,6 +47,9 @@ func main() {
 	// 'startingSquareLetter' represents the square with the chess piece that the user wants to move.
 	// 'endingSquareLetter' represents the square that the user wants to move their piece to.
 	var startingSquareLetter, endingSquareLetter string
+	// These two variables look if the white and black queen is still alive, respectively.
+	var wQueenStatus = true
+	var bQueenStatus = true
 
 	// The loop for our chess game.
 	for {
@@ -70,7 +76,18 @@ func main() {
 			continue
 		}
 
-		// ToDO Make a Goroutine, where two functions look if the Black or White Queen is still alive.
+		// Looks if either the white or black Queen is alive at the same time, by executing them as Goroutines.
+		wg.Add(2)
+		go isQueenAlive(&wQueenStatus, wQUEEN, chessBoard)
+		go isQueenAlive(&bQueenStatus, bQUEEN, chessBoard)
+		wg.Wait()
+		if wQueenStatus == true && bQueenStatus == false { // In case the white queen is alive, while the black is dead.
+			fmt.Println("The black Queen is dead! White has won!")
+			break
+		} else if wQueenStatus == false && bQueenStatus == true { // In case the black queen is alive, while the white is dead.
+			fmt.Println("The white Queen is dead! Black has won!")
+			break
+		}
 
 		// Moves the piece, assuming that the move is valid. This functions job is to ONLY move a piece.
 		chessBoard = move(startingSquareLetter, endingSquareLetter, chessBoard)
@@ -606,20 +623,27 @@ func createBoard(board []square) []square {
 	return board
 }
 
-func isWhiteQueenAlive(board []square) bool {
-	for i := range board {
-		if *board[i].piece == wQUEEN {
-			return true
-		}
+// isQueenAlive checks if the given queen is still alive on the chess board.
+// It updates the queenStatus variable to reflect the status of the queen.
+// If the queen is found on the board, queenStatus is set to true.
+// The function uses a pointer to the queenStatus variable to update its value.
+// The function iterates through the board squares to find the queen in the board array.
+// It stops searching when the queen is found or when the end of the board is reached.
+// After it finishes searching, the function calls wg.Done() to decrement the wait group counter.
+func isQueenAlive(queenStatus *bool, queen string, board []square) {
+	// Generally risky to dereference without checking of the pointer is nil.
+	if queenStatus != nil {
+		*queenStatus = false
 	}
-	return false
-}
 
-func isBlackQueenAlive(board []square) bool {
+	// If the Queen is found, the 'queenStatus' will be true.
 	for i := range board {
-		if *board[i].piece == bQUEEN {
-			return true
+		if board[i].piece != nil && *board[i].piece == queen {
+			*queenStatus = true
+			break
 		}
 	}
-	return false
+
+	// 1 gets subtracted from the wg waitGroup.
+	wg.Done()
 }
