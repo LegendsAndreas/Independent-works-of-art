@@ -259,12 +259,63 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		}
 
 	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
-		// For the Rook, we can just return true, if one of the four or conditions are met, since the movement of the Rook is very strict.
-		if (startingGridY < endingGridY && startingGridX == endingGridX) || // The Rook moves up.
-			(startingGridY == endingGridY && startingGridX < endingGridX) || // The Rook moves right
-			(startingGridY > endingGridY && startingGridX == endingGridX) || // The Rook moves down.
-			(startingGridY == endingGridY && startingGridX > endingGridX) { // The Rook moves left.
-			return true
+		if startingGridY < endingGridY && startingGridX == endingGridX { // The Rook moves up.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridY--
+
+				if startingGridY != endingGridY {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Rook, has a piece in it's way!")
+						return false
+					}
+				}
+			}
+
+		} else if startingGridY == endingGridY && startingGridX < endingGridX { // The Rook moves right
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX--
+
+				if startingGridX != endingGridX {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Rook, has a piece in it's way!")
+						return false
+					}
+				}
+			}
+		} else if startingGridY > endingGridY && startingGridX == endingGridX { // The Rook moves down.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridY++
+
+				if startingGridY != endingGridY {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Rook, has a piece in it's way!")
+						return false
+					}
+				}
+			}
+		} else if startingGridY == endingGridY && startingGridX > endingGridX { // The Rook moves left.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX++
+
+				if startingGridX != endingGridX {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Rook, has a piece in it's way!")
+						return false
+					}
+				}
+			}
 		}
 
 	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" { // Code for Knight
@@ -348,14 +399,65 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 
 	} else if *startPiece.piece == "♛" || *startPiece.piece == "♕" { // Code for Queen
 		// For the Queen, we can check if the movement is valid by combining the movement of the Rook and the Bishop.
-		// If the move is equal to any of the Rooks moves, we return true right away, as we did with the Rook itself.
-		if (startingGridY < endingGridY && startingGridX == endingGridX) || // The Queen moves up.
-			(startingGridY == endingGridY && startingGridX < endingGridX) || // The Queen moves right
-			(startingGridY > endingGridY && startingGridX == endingGridX) || // The Queen moves down.
-			(startingGridY == endingGridY && startingGridX > endingGridX) { // The Queen moves left.
-			return true
+		if startingGridY < endingGridY && startingGridX == endingGridX { // The Rook moves up.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridY--
 
-			// The Queens moves for the Bishop movements are calculated the exact same way as the Bishop.
+				if startingGridY != endingGridY {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Queen, has a piece in it's way!")
+						return false
+					}
+				}
+			}
+
+		} else if startingGridY == endingGridY && startingGridX < endingGridX { // The Rook moves right
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX--
+
+				if startingGridX != endingGridX {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Queen, has a piece in it's way!")
+						return false
+					}
+				}
+			}
+
+		} else if startingGridY > endingGridY && startingGridX == endingGridX { // The Rook moves down.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridY++
+
+				if startingGridY != endingGridY {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Queen, has a piece in it's way!")
+						return false
+					}
+				}
+			}
+
+		} else if startingGridY == endingGridY && startingGridX > endingGridX { // The Rook moves left.
+			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
+				if startingGridX == endingGridX && startingGridY == endingGridY {
+					return true
+				}
+				endingGridX++
+
+				if startingGridX != endingGridX {
+					if hasPiece(endingGridX, endingGridY, board) == true {
+						fmt.Println("The path you chose for the Queen, has a piece in it's way!")
+						return false
+					}
+				}
+			}
 		} else if startingGridY < endingGridY && startingGridX > endingGridX { // The Queen moves up-left.
 			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
 				if startingGridX == endingGridX && startingGridY == endingGridY {
@@ -443,16 +545,17 @@ func hasPiece(xCoordinate int, yCoordinate int, board []square) bool {
 	for i := range board {
 		if board[i].gridCoordinate[0] == yCoordinate && board[i].gridCoordinate[1] == xCoordinate {
 			if board[i].piece == nil {
-				fmt.Printf("grid x: %d and grid y: %d does NOT have a piece.\n", xCoordinate, yCoordinate)
+				// fmt.Printf("grid x: %d and grid y: %d does NOT have a piece.\n", xCoordinate, yCoordinate) // Tool for bug-finding
 				return false
 			} else {
 				fmt.Println(*board[i].piece)
-				fmt.Printf("grid x: %d and grid y: %d DOES have a piece.\n", xCoordinate, yCoordinate)
+				// fmt.Printf("grid x: %d and grid y: %d DOES have a piece.\n", xCoordinate, yCoordinate) // Tool for bug-finding
 				return true
 			}
 		}
 	}
 
+	// SHOULD, be impossible, but the program gets mad if this return statement does not exist.
 	fmt.Println("That coordinate combination does not even exist!")
 	return true
 }
