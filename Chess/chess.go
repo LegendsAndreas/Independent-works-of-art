@@ -124,7 +124,7 @@ func move(startSquare string, endSquare string, board []square) []square {
 }
 
 func moveCheck(startSquare string, endSquare string, board []square) bool {
-	// If both square are equal to each other, we return false.
+	// If both squares are equal to each other, we return false.
 	if startSquare == endSquare {
 		fmt.Println("The starting square is the same as the ending square!")
 		return false
@@ -136,7 +136,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	for i, sq := range board {
 		if sq.letter == startSquare {
 			sSquare = true
-			sPiece = board[i] // Will be used later on for the validMovement function.
+			sPiece = board[i] // Will be used later on.
 		}
 	}
 
@@ -146,7 +146,7 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	for i, eq := range board {
 		if eq.letter == endSquare {
 			eSquare = true
-			ePiece = board[i] // Will be used later on for the validMovement function.
+			ePiece = board[i] // Will be used later on.
 		}
 	}
 
@@ -162,7 +162,20 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 		return false
 	}
 
-	// If the user enters a pattern that is not supported by the appropriate piece, we return false.
+	// If a piece is attacking a piece of the same color, we return false.
+	// If you want to access a specific element, you have to put parenthesizing around the pointer part.
+
+	/*
+		if sPiece.piece != nil && ePiece.piece != nil {
+			if string((*sPiece.piece)[0]) == string((*ePiece.piece)[0]) {
+				fmt.Println(string((*sPiece.piece)[0]))
+				fmt.Println(string((*ePiece.piece)[0]))
+				fmt.Println("The piece is attacking a piece of the same color!")
+				return false
+			}
+		}*/
+
+	// If the user enters a pattern not supported by the appropriate piece, we return false.
 	if !validMovement(sPiece, ePiece, board) {
 		fmt.Println("Wrong movement")
 		return false
@@ -318,13 +331,13 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			}
 		}
 
-	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" { // Code for Knight
+		// Code for Knight
+	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" {
 		// For the Knight, we can return true if the absolute difference between the starting and ending grid coordinates is 2 in one direction and 1 in the other direction. The math.Abs function only accepts floats, so we convert them.
 		if (math.Abs(float64(startingGridX)-float64(endingGridX)) == 2 && math.Abs(float64(startingGridY)-float64(endingGridY)) == 1) ||
 			(math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && math.Abs(float64(startingGridY)-float64(endingGridY)) == 2) {
 			return true
 		}
-		// Fucking genius.
 	} else if *startPiece.piece == "♝" || *startPiece.piece == "♗" { // Code for Bishop
 
 		if startingGridY < endingGridY && startingGridX > endingGridX { // The Bishop moves up-left.
