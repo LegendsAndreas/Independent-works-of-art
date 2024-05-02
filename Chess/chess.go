@@ -79,16 +79,16 @@ func main() {
 		// Moves the piece, assuming that the move is valid. This functions job is to ONLY move a piece.
 		chessBoard = move(startingSquareLetter, endingSquareLetter, chessBoard)
 
-		// Looks if either the white or black Queen is alive at the same time, by executing them as Goroutines.
+		// It looks if either the white or black Queen is alive at the same time, by executing them as Goroutines.
 		wg.Add(2)
 		go isQueenAlive(&wKingStatus, wKING, chessBoard)
 		go isQueenAlive(&bKingtatus, bKING, chessBoard)
 		wg.Wait()
-		if wKingStatus == true && bKingtatus == false { // In case the white King is alive, while the black is dead.
+		if wKingStatus == true && bKingtatus == false { // In case, the white King is alive, while the black is dead.
 			fmt.Println("The black King is dead! White has won!")
 			printBoard(chessBoard) // Prints the final board
 			break
-		} else if wKingStatus == false && bKingtatus == true { // In case the black King is alive, while the white is dead.
+		} else if wKingStatus == false && bKingtatus == true { // In case, the black King is alive, while the white is dead.
 			printBoard(chessBoard) // Prints the final board
 			fmt.Println("The white King is dead! Black has won!")
 			break
@@ -165,6 +165,10 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	// If a piece is attacking a piece of the same color, we return false.
 	// If you want to access a specific element, you have to put parenthesizing around the pointer part.
 
+	if isEnemy(sPiece, ePiece) != true {
+		fmt.Println("The piece is attacking a piece of the same color!")
+		return false
+	}
 	/*
 		if sPiece.piece != nil && ePiece.piece != nil {
 			if string((*sPiece.piece)[0]) == string((*ePiece.piece)[0]) {
@@ -763,4 +767,35 @@ func isQueenAlive(kingStatus *bool, king string, board []square) {
 	}
 	// 1 gets subtracted from the wg waitGroup.
 	wg.Done()
+}
+
+// isEnemy returns true if the starting piece and the ending piece are enemies, and false otherwise.
+// The startingPiece and endingPiece parameters are both of type square.
+func isEnemy(startingPiece square, endingPiece square) bool {
+	// If the starting piece is white.
+	if startingPiece.piece != nil && endingPiece.piece != nil {
+		if *startingPiece.piece == "♟" || *startingPiece.piece == "♜" ||
+			*startingPiece.piece == "♞" || *startingPiece.piece == "♝" ||
+			*startingPiece.piece == "♛" || *startingPiece.piece == "♚" {
+			// And the ending piece is also white, we return false.
+			if *endingPiece.piece == "♟" || *endingPiece.piece == "♜" ||
+				*endingPiece.piece == "♞" || *endingPiece.piece == "♝" ||
+				*endingPiece.piece == "♛" || *endingPiece.piece == "♚" {
+				return false
+			}
+			// If the starting piece is black.
+		} else if *startingPiece.piece == "♙" || *startingPiece.piece == "♖" ||
+			*startingPiece.piece == "♘" || *startingPiece.piece == "♗" ||
+			*startingPiece.piece == "♕" || *startingPiece.piece == "♔" {
+			// And if the ending piece is also black, we return false.
+			if *endingPiece.piece == "♙" || *endingPiece.piece == "♖" ||
+				*endingPiece.piece == "♘" || *endingPiece.piece == "♗" ||
+				*endingPiece.piece == "♕" || *endingPiece.piece == "♔" {
+				return false
+			}
+
+		}
+
+	}
+	return true
 }
