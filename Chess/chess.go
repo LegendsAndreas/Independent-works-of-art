@@ -98,6 +98,9 @@ func main() {
 
 }
 
+// moveCheck checks if a move is valid by verifying various conditions.
+// It takes the starting square and ending square as input, along with the chess board.
+// It returns a boolean value: true if the move is valid, false otherwise.
 func moveCheck(startSquare string, endSquare string, board []square) bool {
 	// If both squares are equal to each other, we return false.
 	if startSquare == endSquare {
@@ -105,57 +108,47 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 		return false
 	}
 
-	// Checks if the starting square exists.
-	var sSquare = false
-	var sPiece square // Assuming that the starting square exists, sPiece will be assigned the value of the board where the square exists.
+	// Checks if the starting square exists, according to 'startSquare'.
+	var startSquareFound = false
+	var sSquare square // Assuming that the starting square exists, sSquare will be assigned the value of the board where the square exists.
 	for i, sq := range board {
 		if sq.letter == startSquare {
-			sSquare = true
-			sPiece = board[i] // Will be used later on.
+			startSquareFound = true
+			sSquare = board[i] // Will be used later on, as an actual square-type variable.
 		}
 	}
 
-	// Checks if the ending square exists.
-	var eSquare = false
-	var ePiece square
+	// Checks if the ending square exists, according to 'endSquare'.
+	var endSquareFound = false
+	var eSquare square // Assuming that the ending square exists, 'eSquare' will be assigned the value of the board where the square exists.
 	for i, eq := range board {
 		if eq.letter == endSquare {
-			eSquare = true
-			ePiece = board[i] // Will be used later on.
+			endSquareFound = true
+			eSquare = board[i] // Will be used later on, as an actual square-type variable.
 		}
 	}
 
 	// If either of the entered squares does not exist, we return false.
-	if !sSquare || !eSquare {
+	if !startSquareFound || !endSquareFound {
 		fmt.Println("One or both of the entered squares does not exist!")
 		return false
 	}
 
 	// If the starting square (startSquare) does not have a piece in it, we return false.
-	if sPiece.piece == nil {
+	if sSquare.piece == nil {
 		fmt.Println("The starting square does not have a piece!")
 		return false
 	}
 
 	// If a piece is attacking a piece of the same color, we return false.
 	// If you want to access a specific element, you have to put parenthesizing around the pointer part.
-
-	if isEnemy(sPiece, ePiece) != true {
+	if isEnemy(sSquare, eSquare) != true {
 		fmt.Println("The piece is attacking a piece of the same color!")
 		return false
 	}
-	/*
-		if sPiece.piece != nil && ePiece.piece != nil {
-			if string((*sPiece.piece)[0]) == string((*ePiece.piece)[0]) {
-				fmt.Println(string((*sPiece.piece)[0]))
-				fmt.Println(string((*ePiece.piece)[0]))
-				fmt.Println("The piece is attacking a piece of the same color!")
-				return false
-			}
-		}*/
 
 	// If the user enters a pattern not supported by the appropriate piece, we return false.
-	if !validMovement(sPiece, ePiece, board) {
+	if !validMovement(sSquare, eSquare, board) {
 		fmt.Println("Wrong movement")
 		return false
 	}
@@ -195,44 +188,47 @@ func isEnemy(startingPiece square, endingPiece square) bool {
 	return true
 }
 
-func validMovement(startPiece square, endingPiece square, board []square) bool {
+// validMovement determines if a specific chess piece can move from a starting square to an ending square on the chess board.
+// It takes in the starting square, ending square, and the current state of the chess board as parameters.
+// It returns a boolean value, true if the movement is valid and false otherwise.
+func validMovement(startSquare square, endingSquare square, board []square) bool {
 	// We check the movement of the piece, by comparing the starting position to the ending position.
 	// startingGridX/Y is equal to the coordinates for where the piece started.
-	// endingGridX/Y is equal to the coordinates for the piece moves to.
-	var startingGridX = startPiece.gridCoordinate[1]
-	var startingGridY = startPiece.gridCoordinate[0]
-	var endingGridX = endingPiece.gridCoordinate[1]
-	var endingGridY = endingPiece.gridCoordinate[0]
+	// endingGridX/Y is equal to the coordinates for the piece to move to.
+	var startingGridX = startSquare.gridCoordinate[1]
+	var startingGridY = startSquare.gridCoordinate[0]
+	var endingGridX = endingSquare.gridCoordinate[1]
+	var endingGridY = endingSquare.gridCoordinate[0]
 
-	if *startPiece.piece == "♟" { // Code for White Pawn
+	if *startSquare.piece == "♟" { // Code for White Pawn
 		// If a pawn moves diagonally and the square it moves to does not have a piece, it returns false.
-		if endingPiece.piece == nil && (startingGridX > endingGridX || startingGridX < endingGridX) {
+		if endingSquare.piece == nil && (startingGridX > endingGridX || startingGridX < endingGridX) {
 			fmt.Println("There is no piece for the Pawn to capture!")
 			return false
 		}
 
-		if startingGridY == 2 && endingGridY == 4 && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves 2 squares up from the start, assuming that the ending square is empty.
+		if startingGridY == 2 && endingGridY == 4 && startingGridX == endingGridX && endingSquare.piece == nil { // The pawn moves 2 squares up from the start, assuming that the ending square is empty.
 			if hasPiece(startingGridX, startingGridY+1, board) {
 				fmt.Println("The path you chose for the White Pawn, has a piece in it's way!")
 				return false
 			}
 			return true
-		} else if startingGridY+1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either up-left or up-right, assuming that the ending square is not empty.
+		} else if startingGridY+1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingSquare.piece != nil { // The Pawn moves diagonally, either up-left or up-right, assuming that the ending square is not empty.
 			// This piece of code checks if the pawn is at the end of the board. In which case, it will become a Queen.
 			if endingGridY == 8 {
 				for i := range board {
-					if board[i].letter == startPiece.letter {
+					if board[i].letter == startSquare.letter {
 						board[i].piece = &wQUEEN
 						return true
 					}
 				}
 			}
 			return true
-		} else if startingGridY+1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The pawn moves up once, assuming that the square ahead of it is empty.
+		} else if startingGridY+1 == endingGridY && startingGridX == endingGridX && endingSquare.piece == nil { // The pawn moves up once, assuming that the square ahead of it is empty.
 			// This piece of code checks if the pawn is at the end of the board. In which case, it will become a Queen.
 			if endingGridY == 8 {
 				for i := range board {
-					if board[i].letter == startPiece.letter {
+					if board[i].letter == startSquare.letter {
 						board[i].piece = &wQUEEN
 						return true
 					}
@@ -241,25 +237,25 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			return true
 		}
 
-	} else if *startPiece.piece == "♙" { // Code for Black Pawn
+	} else if *startSquare.piece == "♙" { // Code for Black Pawn
 		// If a pawn moves diagonally and the square it moves to does not have a piece, it returns false.
-		if endingPiece.piece == nil && (startingGridX > endingGridX || startingGridX < endingGridX) {
+		if endingSquare.piece == nil && (startingGridX > endingGridX || startingGridX < endingGridX) {
 			fmt.Println("There is no piece for the Pawn to capture!")
 			return false
 		}
 
-		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves 2 squares down from the start, assuming that the ending square is empty.
+		if startingGridY == 7 && endingGridY == 5 && startingGridX == endingGridX && endingSquare.piece == nil { // The Pawn moves 2 squares down from the start, assuming that the ending square is empty.
 			if hasPiece(startingGridX, startingGridY-1, board) { // We look at the square +1 ahead of the pawn and of there is a piece in the way, we truen false.
 				fmt.Println("The path you chose for the White Pawn, has a piece in it's way!")
 				return false
 			}
 			return true
-		} else if startingGridY-1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingPiece.piece != nil { // The Pawn moves diagonally, either down-left or down-right, assuming that the ending square is not empty.
+		} else if startingGridY-1 == endingGridY && math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && endingSquare.piece != nil { // The Pawn moves diagonally, either down-left or down-right, assuming that the ending square is not empty.
 
 			// This piece of code checks if the black pawn is at the end of the board. In which case, it will become a black Queen.
 			if endingGridY == 1 {
 				for i := range board {
-					if board[i].letter == startPiece.letter {
+					if board[i].letter == startSquare.letter {
 						board[i].piece = &bQUEEN
 						return true // The loop ends prematurely when the appropriate square is found, so we don't have to go through more than we need to.
 					}
@@ -267,12 +263,12 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			}
 
 			return true
-		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingPiece.piece == nil { // The Pawn moves down once, assuming that the square ahead of it is empty.
+		} else if startingGridY-1 == endingGridY && startingGridX == endingGridX && endingSquare.piece == nil { // The Pawn moves down once, assuming that the square ahead of it is empty.
 
 			// This piece of code checks if the black pawn is at the end of the board. In which case, it will become a black Queen.
 			if endingGridY == 1 {
 				for i := range board {
-					if board[i].letter == startPiece.letter {
+					if board[i].letter == startSquare.letter {
 						board[i].piece = &bQUEEN
 						return true // The loop ends prematurely when the appropriate square is found, so we don't have to go through more than we need to.
 					}
@@ -281,7 +277,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			return true
 		}
 
-	} else if *startPiece.piece == "♜" || *startPiece.piece == "♖" { // Code for Rook
+	} else if *startSquare.piece == "♜" || *startSquare.piece == "♖" { // Code for Rook
 		if startingGridY < endingGridY && startingGridX == endingGridX { // The Rook moves up.
 			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
 				if startingGridX == endingGridX && startingGridY == endingGridY {
@@ -342,13 +338,13 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 		}
 
 		// Code for Knight
-	} else if *startPiece.piece == "♞" || *startPiece.piece == "♘" {
+	} else if *startSquare.piece == "♞" || *startSquare.piece == "♘" {
 		// For the Knight, we can return true if the absolute difference between the starting and ending grid coordinates is 2 in one direction and 1 in the other direction. The math.Abs function only accepts floats, so we convert them.
 		if (math.Abs(float64(startingGridX)-float64(endingGridX)) == 2 && math.Abs(float64(startingGridY)-float64(endingGridY)) == 1) ||
 			(math.Abs(float64(startingGridX)-float64(endingGridX)) == 1 && math.Abs(float64(startingGridY)-float64(endingGridY)) == 2) {
 			return true
 		}
-	} else if *startPiece.piece == "♝" || *startPiece.piece == "♗" { // Code for Bishop
+	} else if *startSquare.piece == "♝" || *startSquare.piece == "♗" { // Code for Bishop
 
 		if startingGridY < endingGridY && startingGridX > endingGridX { // The Bishop moves up-left.
 			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
@@ -420,7 +416,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			}
 		}
 
-	} else if *startPiece.piece == "♛" || *startPiece.piece == "♕" { // Code for Queen
+	} else if *startSquare.piece == "♛" || *startSquare.piece == "♕" { // Code for Queen
 		// For the Queen, we can check if the movement is valid by combining the movement of the Rook and the Bishop.
 		if startingGridY < endingGridY && startingGridX == endingGridX { // The Rook moves up.
 			for startingGridX > 0 && startingGridX < 9 && startingGridY > 0 && startingGridY < 9 {
@@ -550,7 +546,7 @@ func validMovement(startPiece square, endingPiece square, board []square) bool {
 			}
 		}
 
-	} else if *startPiece.piece == "♚" || *startPiece.piece == "♔" { // Code for King
+	} else if *startSquare.piece == "♚" || *startSquare.piece == "♔" { // Code for King
 		// For the King, we can return true if the absolute difference between the starting and ending grid coordinates is less than or equal to 1 in both the x and y directions.
 		// We also have to turn the startingGrid values into floats, because the math.Absolute function only accepts floats.
 		if math.Abs(float64(startingGridX)-float64(endingGridX)) <= 1 && math.Abs(float64(startingGridY)-float64(endingGridY)) <= 1 {
