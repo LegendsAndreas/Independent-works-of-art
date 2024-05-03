@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d4f2b4c-453e-4436-af3d-49709904388d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go5.go" beforeDir="false" afterPath="$PROJECT_DIR$/go5.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/goCun5Records.txt" beforeDir="false" afterPath="$PROJECT_DIR$/goCun5Records.txt" afterDir="false" />
-    </list>
+    <list default="true" id="9d4f2b4c-453e-4436-af3d-49709904388d" name="Changes" comment="Refactor loop iterations and adjust file open permissions&#10;&#10;The main changes in the commit include decreasing the iterations in multiple loops from 250_000 to 200_000 in the go5.go file. The commit also altered the mode of opening 'goCun5Records.txt' from both writing and appending. Various parts of the .idea/workspace.xml file were reformatted with minor changes in data representation." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,6 +73,10 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Refactor loop iterations and adjust file open permissions&#10;&#10;The main changes in the commit include decreasing the iterations in multiple loops from 250_000 to 200_000 in the go5.go file. The commit also altered the mode of opening 'goCun5Records.txt' from both writing and" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor loop iterations and adjust file open permissions&#10;&#10;The main changes in the commit include decreasing the iterations in multiple loops from 250_000 to 200_000 in the go5.go file. The commit also altered the mode of opening 'goCun5Records.txt' from both writing and" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

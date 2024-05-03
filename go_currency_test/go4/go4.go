@@ -48,7 +48,7 @@ func main() { // Gorutine 1
 	fmt.Println(time.Since(start))
 
 	// We open the text file 'goCun1Records.txt', in the append mode, so that we can add other values to get, rather than just create a new value.
-	file, err := os.OpenFile("goCun4Records.txt", os.O_APPEND|os.O_WRONLY, 0644)
+	file, err := os.OpenFile("goCun4Records.txt", os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
