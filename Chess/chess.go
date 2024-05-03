@@ -33,6 +33,7 @@ type square struct {
 	piece          *string
 }
 
+// Used for the goroutine, to check if either black or white King is still alive.
 var wg sync.WaitGroup
 
 // After careful consideration and thought, I have come to the realization that I should have used a map of some kind.
@@ -81,8 +82,8 @@ func main() {
 
 		// It looks if either the white or black Queen is alive at the same time, by executing them as Goroutines.
 		wg.Add(2)
-		go isQueenAlive(&wKingStatus, wKING, chessBoard)
-		go isQueenAlive(&bKingtatus, bKING, chessBoard)
+		go isKingAlive(&wKingStatus, wKING, chessBoard)
+		go isKingAlive(&bKingtatus, bKING, chessBoard)
 		wg.Wait()
 		if wKingStatus == true && bKingtatus == false { // In case, the white King is alive, while the black is dead.
 			fmt.Println("The black King is dead! White has won!")
@@ -95,32 +96,6 @@ func main() {
 		}
 	}
 
-}
-
-// move function moves a chess piece from a starting square to an ending square on the given chess board.
-// It takes the starting square and ending square as string arguments, and the current board as a slice of "square" structs.
-// It updates the board by moving the piece from the starting square to the ending square.
-// If the piece at the starting square is not found, or the ending square is invalid, the board remains unchanged.
-// The updated board is returned.
-func move(startSquare string, endSquare string, board []square) []square {
-	var startIdx int
-	var endIdx int
-	// Loops though the entire array, and when it finds the index at which the startSquare or the endSquare presides, it sets startIdx and endIdx to be equal to that array index.
-	// Would have been a lot easier if I had just used a map.
-	for i, sq := range board {
-		if sq.letter == startSquare {
-			startIdx = i
-		}
-		if sq.letter == endSquare {
-			endIdx = i
-		}
-	}
-
-	// Replaces the endSquare.piece with the startSquare.piece and sets the startSquare.piece to be empty, since it no longer has a piece.
-	board[endIdx].piece = board[startIdx].piece
-	board[startIdx].piece = nil
-
-	return board
 }
 
 func moveCheck(startSquare string, endSquare string, board []square) bool {
@@ -186,6 +161,37 @@ func moveCheck(startSquare string, endSquare string, board []square) bool {
 	}
 
 	// Assuming that we get no return false statements anywhere, we can return true.
+	return true
+}
+
+// isEnemy returns true if the starting piece and the ending piece are enemies, and false otherwise.
+// The startingPiece and endingPiece parameters are both of type square.
+func isEnemy(startingPiece square, endingPiece square) bool {
+	// If the starting piece is white.
+	if startingPiece.piece != nil && endingPiece.piece != nil {
+		if *startingPiece.piece == "♟" || *startingPiece.piece == "♜" ||
+			*startingPiece.piece == "♞" || *startingPiece.piece == "♝" ||
+			*startingPiece.piece == "♛" || *startingPiece.piece == "♚" {
+			// And the ending piece is also white, we return false.
+			if *endingPiece.piece == "♟" || *endingPiece.piece == "♜" ||
+				*endingPiece.piece == "♞" || *endingPiece.piece == "♝" ||
+				*endingPiece.piece == "♛" || *endingPiece.piece == "♚" {
+				return false
+			}
+			// If the starting piece is black.
+		} else if *startingPiece.piece == "♙" || *startingPiece.piece == "♖" ||
+			*startingPiece.piece == "♘" || *startingPiece.piece == "♗" ||
+			*startingPiece.piece == "♕" || *startingPiece.piece == "♔" {
+			// And if the ending piece is also black, we return false.
+			if *endingPiece.piece == "♙" || *endingPiece.piece == "♖" ||
+				*endingPiece.piece == "♘" || *endingPiece.piece == "♗" ||
+				*endingPiece.piece == "♕" || *endingPiece.piece == "♔" {
+				return false
+			}
+
+		}
+
+	}
 	return true
 }
 
@@ -745,14 +751,14 @@ func createBoard(board []square) []square {
 	return board
 }
 
-// isQueenAlive checks if the given queen is still alive on the chess board.
+// isKingAlive checks if the given queen is still alive on the chess board.
 // It updates the queenStatus variable to reflect the status of the queen.
 // If the queen is found on the board, queenStatus is set to true.
 // The function uses a pointer to the queenStatus variable to update its value.
 // The function iterates through the board squares to find the queen in the board array.
 // It stops searching when the queen is found or when the end of the board is reached.
 // After it finishes searching, the function calls wg.Done() to decrement the wait group counter.
-func isQueenAlive(kingStatus *bool, king string, board []square) {
+func isKingAlive(kingStatus *bool, king string, board []square) {
 	// Generally risky to dereference without checking of the pointer is nil.
 	if kingStatus != nil {
 		*kingStatus = false
@@ -769,33 +775,28 @@ func isQueenAlive(kingStatus *bool, king string, board []square) {
 	wg.Done()
 }
 
-// isEnemy returns true if the starting piece and the ending piece are enemies, and false otherwise.
-// The startingPiece and endingPiece parameters are both of type square.
-func isEnemy(startingPiece square, endingPiece square) bool {
-	// If the starting piece is white.
-	if startingPiece.piece != nil && endingPiece.piece != nil {
-		if *startingPiece.piece == "♟" || *startingPiece.piece == "♜" ||
-			*startingPiece.piece == "♞" || *startingPiece.piece == "♝" ||
-			*startingPiece.piece == "♛" || *startingPiece.piece == "♚" {
-			// And the ending piece is also white, we return false.
-			if *endingPiece.piece == "♟" || *endingPiece.piece == "♜" ||
-				*endingPiece.piece == "♞" || *endingPiece.piece == "♝" ||
-				*endingPiece.piece == "♛" || *endingPiece.piece == "♚" {
-				return false
-			}
-			// If the starting piece is black.
-		} else if *startingPiece.piece == "♙" || *startingPiece.piece == "♖" ||
-			*startingPiece.piece == "♘" || *startingPiece.piece == "♗" ||
-			*startingPiece.piece == "♕" || *startingPiece.piece == "♔" {
-			// And if the ending piece is also black, we return false.
-			if *endingPiece.piece == "♙" || *endingPiece.piece == "♖" ||
-				*endingPiece.piece == "♘" || *endingPiece.piece == "♗" ||
-				*endingPiece.piece == "♕" || *endingPiece.piece == "♔" {
-				return false
-			}
-
+// move function moves a chess piece from a starting square to an ending square on the given chess board.
+// It takes the starting square and ending square as string arguments, and the current board as a slice of "square" structs.
+// It updates the board by moving the piece from the starting square to the ending square.
+// If the piece at the starting square is not found, or the ending square is invalid, the board remains unchanged.
+// The updated board is returned.
+func move(startSquare string, endSquare string, board []square) []square {
+	var startIdx int
+	var endIdx int
+	// Loops though the entire array, and when it finds the index at which the startSquare or the endSquare presides, it sets startIdx and endIdx to be equal to that array index.
+	// Would have been a lot easier if I had just used a map.
+	for i, sq := range board {
+		if sq.letter == startSquare {
+			startIdx = i
 		}
-
+		if sq.letter == endSquare {
+			endIdx = i
+		}
 	}
-	return true
+
+	// Replaces the endSquare.piece with the startSquare.piece and sets the startSquare.piece to be empty, since it no longer has a piece.
+	board[endIdx].piece = board[startIdx].piece
+	board[startIdx].piece = nil
+
+	return board
 }
