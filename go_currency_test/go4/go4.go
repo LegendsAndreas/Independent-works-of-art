@@ -47,7 +47,8 @@ func main() { // Gorutine 1
 	timePassed := strconv.FormatInt(int64(time.Since(start).Seconds()), 10)
 	fmt.Println(time.Since(start))
 
-	// We open the text file 'goCun1Records.txt', in the append mode, so that we can add other values to get, rather than just create a new value.
+	// We open the text file 'goCun1Records.txt', in appended mode,
+	// so that we can add other values to get, rather than just create a new value.
 	file, err := os.OpenFile("goCun4Records.txt", os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal(err)
