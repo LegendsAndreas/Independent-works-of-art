@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d4f2b4c-453e-4436-af3d-49709904388d" name="Changes" comment="Refactor loop iterations and adjust file open permissions&#10;&#10;The main changes in the commit include decreasing the iterations in multiple loops from 250_000 to 200_000 in the go5.go file. The commit also altered the mode of opening 'goCun5Records.txt' from both writing and appending. Various parts of the .idea/workspace.xml file were reformatted with minor changes in data representation." />
+    <list default="true" id="9d4f2b4c-453e-4436-af3d-49709904388d" name="Changes" comment="Refactor loop iterations and adjust file open permissions&#10;&#10;The main changes in the commit include decreasing the iterations in multiple loops from 250_000 to 200_000 in the go5.go file. The commit also altered the mode of opening 'goCun5Records.txt' from both writing and appending. Various parts of the .idea/workspace.xml file were reformatted with minor changes in data representation.">
+      <change afterPath="$PROJECT_DIR$/../../FizzBuzz/fizzyBuzzy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Results discussion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../Results discussion.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
