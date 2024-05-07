@@ -1,15 +1,25 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 )
+
+// Used to keep track of the time it took for a player to complete a game of Fizz Buzz and the amount of points they got
+type score struct {
+	time  int
+	point int
+}
 
 var arrowUp = "\u2191"
 var arrowDown = "\u2193"
 
-const MAX = 100
+const MAX = 15
 
 func main() {
 	var arr [MAX]int
@@ -29,6 +39,7 @@ func main() {
 			log.Fatal(err)
 		}
 
+		// The player guesses "fizz"
 		if input == "fizz" {
 			if isFizz(val) {
 				fmt.Println("Correct!", arrowUp, arrowUp, arrowUp)
@@ -38,6 +49,7 @@ func main() {
 				points--
 			}
 
+			// The player guesses "buzz"
 		} else if input == "buzz" {
 			if isBuzz(val) {
 				fmt.Println("Correct!", arrowUp, arrowUp, arrowUp)
@@ -47,6 +59,7 @@ func main() {
 				points--
 			}
 
+			// The player guesses "both"
 		} else if input == "both" {
 			if isBoth(val) {
 				fmt.Println("Correct!", arrowUp, arrowUp, arrowUp)
@@ -56,6 +69,7 @@ func main() {
 				points--
 			}
 
+			// The player guesses "next"
 		} else if input == "next" {
 			if next(val) {
 				fmt.Println("Correct!", arrowUp, arrowUp, arrowUp)
@@ -70,8 +84,39 @@ func main() {
 		}
 	}
 
-	timeElapsed := time.Since(start).Seconds()
-	fmt.Println("You got: ", points, " in ", timeElapsed, " seconds")
+	// Records the time it took for the player to complete a game of Fizz Buzz and converting it to a string in seconds.
+	timeElapsed := strconv.FormatInt(int64(time.Since(start).Seconds()), 10)
+
+	// Opens the text file 'FizzBuzzScoreboard.txt', used for keeping track of player scores.
+	scoreboardFile, err := os.OpenFile("FizzBuzzScoreboard.txt", os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// We convert 'points' from integer to string, so that we can store it in the scoreboardFile.
+	convertedPoints := strconv.FormatInt(int64(points), 10)
+
+	// We write the time it took for the player to complete and points gained into the scoreboardFile.
+	_, err2 := scoreboardFile.WriteString(timeElapsed + " " + convertedPoints + "\n")
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+
+	// We are now done with the file, so we close it.
+	err3 := scoreboardFile.Close()
+	if err != nil {
+		log.Fatal(err3)
+	}
+
+	// Prints the players final score.
+	fmt.Println("In", timeElapsed, "seconds, you got:", points, "points!")
+
+	// Gets the scores of all the games and stores them in 'scores'.
+	var scores []score
+	scores = getScores(scores)
+	for i := range scores {
+		fmt.Printf("Score %d is: %d and %d\n", i, scores[i].time, scores[i].point)
+	}
 }
 
 // Plays Fizz Buzz automatically.
@@ -120,4 +165,43 @@ func next(x int) bool {
 	} else {
 		return false
 	}
+}
+
+func getScores(scores []score) []score {
+
+	// Since we just have to open a file, we can just write: os.Open([FILE-NAME]), because it is read-only by default.
+	scoreFile, err := os.Open("FizzBuzzScoreboard.txt")
+	if err != nil {
+		log.Fatal("getScores error 1:", err)
+	}
+
+	fileScanner := bufio.NewScanner(scoreFile)
+	fileScanner.Split(bufio.ScanLines) // This basically tells the scanner to read the file, until it comes to a newline.
+
+	// As long as we have not read through the entire file, the loop will continue.
+	for fileScanner.Scan() {
+		// Reads the file, one line at a time and stores the content in 'line'.
+		line := fileScanner.Text()
+		// 'strings.Split(line, " ")' takes the variable 'line' and splits it into a slice of substrings, breaking at each space.
+		// It then takes element 0 of that slice, which represents time in seconds, and stores it in 'time'.
+		// Lastly, it converts the string into an integer.
+		time, err2 := strconv.Atoi(strings.Split(line, " ")[0])
+		if err2 != nil {
+			log.Fatal("getScores error 2, conversion error:", err2)
+		}
+		// Same as with the 'time' variable, only it stores element 1 of the slice of substrings.
+		point, err3 := strconv.Atoi(strings.Split(line, " ")[1])
+		if err3 != nil {
+			log.Fatal("getScores error 3, conversion error:", err3)
+		}
+		// Finally, appends 'time' and 'point' as a score-struct, to the slice 'scores'.
+		scores = append(scores, score{time, point})
+	}
+
+	// We are now done with the file, so we close it.
+	err2 := scoreFile.Close()
+	if err2 != nil {
+		log.Fatal("getScores error 2:", err2)
+	}
+	return scores
 }
