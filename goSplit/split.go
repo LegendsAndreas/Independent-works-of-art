@@ -9,7 +9,7 @@ func main() {
 	subS = stringSplit(subS, s, ' ')
 
 	for i := 0; i < len(subS); i++ {
-		fmt.Printf("%d = %s\n", i, subS[i])
+		fmt.Printf("%d = %s \n", i, subS[i])
 	}
 }
 
