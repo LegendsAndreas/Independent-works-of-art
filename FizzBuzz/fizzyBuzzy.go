@@ -117,10 +117,39 @@ func main() {
 	for i := range scores {
 		fmt.Printf("Score %d is: %d and %d\n", i, scores[i].time, scores[i].point)
 	}
+
+	//
+	var highScores = scores
+	highScores = getHighScores(highScores)
+
+	for i := range highScores {
+		fmt.Printf("High score %d is: %d and %d\n", i+1, highScores[i].time, highScores[i].point)
+	}
+}
+
+// getHighScores sorts the highScoresArr in descending order based on the point field of each score struct.
+// It uses the insertion sort algorithm to accomplish this.
+// The function takes in a slice of score structs as input and returns the sorted slice.
+func getHighScores(highScoresArr []score) []score {
+	var i int
+	var j int
+
+	for i = 1; i < len(highScoresArr); i++ {
+		elem := highScoresArr[i].point // Starts at 1
+		j = i - 1                      // Starts at 0
+
+		for j >= 0 && highScoresArr[j].point < elem {
+			highScoresArr[j+1].point = highScoresArr[j].point
+			j = j - 1
+		}
+		highScoresArr[j+1].point = elem
+	}
+
+	return highScoresArr
 }
 
 // Plays Fizz Buzz automatically.
-func autoFizzBuzz(arr [100]int) {
+func autoFizzBuzz(arr [MAX]int) {
 	for i := range arr {
 		if arr[i]%3 == 0 && arr[i]%5 == 0 {
 			fmt.Printf("%d:", arr[i])
