@@ -10,16 +10,16 @@ import (
 	"time"
 )
 
+const MAX = 15
+
+var arrowUp = "\u2191"
+var arrowDown = "\u2193"
+
 // Used to keep track of the time it took for a player to complete a game of Fizz Buzz and the amount of points they got
 type score struct {
 	time  int
 	point int
 }
-
-var arrowUp = "\u2191"
-var arrowDown = "\u2193"
-
-const MAX = 15
 
 func main() {
 	var arr [MAX]int
