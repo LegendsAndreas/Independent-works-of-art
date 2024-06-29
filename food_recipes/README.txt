@@ -1,0 +1,1 @@
+This program is a macro tracker, that specifically tracks your calories, fats, carbs and protein. It works by you inserting your own recipes into the program, which includes the name of the recipe, along with every ingredient measured in grams and its macros pr. 100 grams.
