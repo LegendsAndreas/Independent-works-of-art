@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strconv"
 	"strings"
@@ -29,7 +30,7 @@ type ingredient struct {
 	multiplier    float32
 
 	/* EXAMPLE
-	Tulip Pulled Pork	// Name
+	Tulip-Pulled-Pork	// Name
 	125					// Measured in grams
 	133					// Calories/Kcal
 	6					// Fats
@@ -51,7 +52,7 @@ func main() {
 	var input string
 	var recipes []recipe
 
-	// Initializes 'recipes' with all the current
+	// Initializes 'recipes' with all the current recipes in recipes_go.txt
 	recipes = initializeRecipes(recipes)
 
 	for {
@@ -62,6 +63,7 @@ func main() {
 			"	remove\n" +
 			"	print\n" +
 			"	plan\n" +
+			"	random\n" +
 			"	q\n>")
 		_, err := fmt.Scan(&input)
 		if err != nil {
@@ -69,16 +71,13 @@ func main() {
 			return
 		}
 
-		// If the user wants to add a new recipe.
-		if input == "new" {
+		if input == "new" { // If the user wants to add a new recipe.
 			recipes = newRecipe(recipes)
 
-			// If the user wants to edit an existing recipe.
-		} else if input == "edit" {
+		} else if input == "edit" { // If the user wants to edit an existing recipe.
 			recipes = editRecipe(recipes)
 
-			// If the user wants to remove a recipe.
-		} else if input == "remove" {
+		} else if input == "remove" { // If the user wants to remove a recipe.
 			recipes = removeRecipe(recipes)
 			// Updates the file "recipes_go"
 			updateFile(recipes)
@@ -107,7 +106,25 @@ func main() {
 			}
 
 		} else if input == "plan" { // If the user wants to plan a day of eating.
-			planDay(recipes)
+			var planInput string
+			fmt.Print("Enter day or week plan\n" +
+				"	day\n" +
+				"	week\n" +
+				">")
+			_, err3 := fmt.Scan(&planInput)
+			if err3 != nil {
+				fmt.Println("Scanning plan input error:", err3)
+				return
+			}
+
+			if planInput == "day" {
+				planDay(recipes)
+			} else if planInput == "week" {
+				planWeek(recipes)
+			}
+
+		} else if input == "random" {
+			randomMeal(recipes)
 		} else if input == "q" { // If the user wants to quit the program.
 			fmt.Println("Exiting the program...")
 			break
@@ -155,7 +172,7 @@ func initializeRecipes(recipeSli []recipe) []recipe {
 		// Extract the ingredients from the line
 		ingredients := make([]ingredient, 0)
 		for i := 3; i+6 <= len(splitLineArray); i += 6 { // "i+6 <= len(splitLineArray)" checks that there actually are the appropriate amount of elements, so that we don't get an out of bound error. Set it to "i < len(splitLineArray)" and you are done for.
-			// Perhaps, i could rewrite this with fprintf(name, kilo, cal, fats, carbs, pro)
+			// Perhaps, I could rewrite this with fprintf(name, kilo, cal, fats, carbs, pro)
 			ingredientName := splitLineArray[i]
 			kilograms, err := strconv.ParseFloat(splitLineArray[i+1], 32)
 			if err != nil {
@@ -234,46 +251,40 @@ func newRecipe(recipeSlice []recipe) []recipe {
 
 // getMealType prompts the user to enter a meal type (B, L, D, S, K) and returns it as a rune.
 func getMealType() rune {
-	reader := bufio.NewReader(os.Stdin)
-	var tMeal rune
+	var tMeal string
+	var runeMealType rune
 
 	for {
-		// If we were to use fmt.Scan, it would an integer, since a rune is almost the same as an int32.
-		// So instead, we use read a string from the user, that we can convert to a rune.
 		fmt.Print("Enter meal type>")
-		input, err := reader.ReadString('\n')
+		_, err := fmt.Scan(&tMeal)
 		if err != nil {
 			log.Fatal("Reading from standard input error:", err)
 		}
 
-		// One might think that this line is unnecessary, since our delimiter is a newline, BUT the way that
-		//.ReadString() Works, is that it reads up until and INCLUDING the delimiter. So, we remove the newline.
-		input = strings.TrimSpace(input)
-
-		// If the entered input is longer than a single character, we skip this iteration.
-		if len(input) > 1 {
-			fmt.Println("Too long input, try again!")
+		// Checks if the input is longer than 1.
+		if len(tMeal) > 1 {
+			fmt.Println("The meal type is too long, try again!")
 			continue
 		}
 
-		// Checks that the entered value is valid.
-		if input != "B" && input != "L" && input != "D" && input != "S" && input != "K" {
-			fmt.Println("Invalid meal type.")
-			continue
-		}
-
-		// Assuming that the input is not nothing, we convert our entered string to a rune.
-		// Else, if the user for example just presses enter or the space bar, the else-statement would execute.
-		if len(input) > 0 {
-			tMeal = rune(input[0])
-			break
-		} else {
+		// Checks if the input length is not 0. Don't know how you can achieve this, with the current setup, but better safe than sorry.
+		if len(tMeal) < 1 {
 			fmt.Println("Input is nothing, try again!")
 			continue
 		}
+
+		// Checks that the input is a valid meal type.
+		if tMeal != "B" && tMeal != "L" && tMeal != "S" && tMeal != "K" && tMeal != "D" {
+			fmt.Println("Invalid meal type, try again!")
+			continue
+		}
+
+		// We convert the first element into a rune and the loop breaks.
+		runeMealType = rune(tMeal[0])
+		break
 	}
 
-	return tMeal
+	return runeMealType
 }
 
 // getRecipeName prompts the user to enter a recipe name and returns it as a string.
@@ -368,9 +379,9 @@ func getIngredients() []ingredient {
 }
 
 // getTotalMacros, calculates all the macros for a recipe and returns it as a totalMacros struct.
-func getTotalMacros(recipeSli []ingredient) totalMacros {
+func getTotalMacros(ingredientsSlice []ingredient) totalMacros {
 	var total totalMacros
-	for _, r := range recipeSli {
+	for _, r := range ingredientsSlice {
 		total.tCalories += r.calories * r.multiplier
 		total.tFats += r.fats * r.multiplier
 		total.tCarbohydrates += r.carbohydrates * r.multiplier
@@ -450,6 +461,9 @@ func addRecipeToFile(copiedRecipe recipe) {
 }
 
 func editRecipe(repSli []recipe) []recipe {
+	// Prints all the recipes, so that the user can easily identify the ones they want to change.
+	printBasicRecipes(repSli)
+
 	fmt.Println("Editing recipe...")
 
 	// Asks for which recipe to change and stores the input in 'recipeIndex'
@@ -540,6 +554,7 @@ func editRecipe(repSli []recipe) []recipe {
 
 		// If the user wants to change the ingredients.
 	} else if part == "ingredients" {
+		// ToDo: Add a function that prints every ingredients, either by altering "printSingleRecipe" to work, without asking for input, or making a new function.
 
 		// Asks the user for what they want to do with the ingredient.
 		var input string
@@ -563,6 +578,9 @@ func editRecipe(repSli []recipe) []recipe {
 			repSli[recipeIndex-1].ingredients = changeIngredient(repSli[recipeIndex-1])
 
 		}
+
+		// Updates the total macros.
+		repSli[recipeIndex-1].total = getTotalMacros(repSli[recipeIndex-1].ingredients)
 
 	}
 	// Updates the file.
@@ -630,11 +648,11 @@ func planDay(recipeSli []recipe) {
 
 		if input == "q" { // Prints the final sum of macros for an entire day and breaks the loop.
 			fmt.Println("Your final macros are for the day are:")
-			fmt.Printf("Current macros:\n"+
+			fmt.Printf(
 				"	Calories: 	%.2f\n"+
-				"	Fats: 		%.2f\n"+
-				"	Carbs: 		%.2f\n"+
-				"	Protein: 	%.2f\n", macrosForToday.tCalories, macrosForToday.tFats, macrosForToday.tCarbohydrates, macrosForToday.tProteins)
+					"	Fats: 		%.2f\n"+
+					"	Carbs: 		%.2f\n"+
+					"	Protein: 	%.2f\n", macrosForToday.tCalories, macrosForToday.tFats, macrosForToday.tCarbohydrates, macrosForToday.tProteins)
 			break
 		}
 
@@ -954,4 +972,99 @@ func addExtraIngredient(parsedRecipe recipe) []ingredient {
 	parsedRecipe.ingredients = append(parsedRecipe.ingredients, ingre)
 
 	return parsedRecipe.ingredients
+}
+
+// randomMeal, gets you a random meal for you to make, in case you don't know what to make.
+func randomMeal(recipeSli []recipe) {
+	fmt.Println("Printing random recipe to make...")
+	var randomNumber int
+
+	for {
+		randomNumber = rand.Intn(len(recipeSli))
+
+		// In case the meal type is not 'L' or 'D' (lunch or dinner), we skip this iteration to get one.
+		if recipeSli[randomNumber].mealType == 'K' || recipeSli[randomNumber].mealType == 'S' || recipeSli[randomNumber].mealType == 'B' {
+			fmt.Println("Snack, side or breakfast meal has been picked, finding different meal...")
+			continue
+		} else {
+			fmt.Printf("Recipe %d: %s, %.2f, %.2f, %.2f, %.2f\n", recipeSli[randomNumber].recipeNumber, recipeSli[randomNumber].recipeName, recipeSli[randomNumber].total.tCalories, recipeSli[randomNumber].total.tFats, recipeSli[randomNumber].total.tCarbohydrates, recipeSli[randomNumber].total.tProteins)
+			break
+		}
+	}
+}
+
+func planWeek(recipeSli []recipe) {
+	fmt.Println("Planning out week...")
+	var mondayMacros totalMacros
+	var tuesdayMacros totalMacros
+	var wednesdayMacros totalMacros
+	var thursdayMacros totalMacros
+	var fridayMacros totalMacros
+	var satudayMacros totalMacros
+	var sundayMacros totalMacros
+	var weekMacros []totalMacros
+	var recipeInput string
+
+	weekMacros = append(weekMacros, mondayMacros, tuesdayMacros, wednesdayMacros, thursdayMacros, fridayMacros, satudayMacros, sundayMacros)
+
+	for i := 0; i < 7; i++ {
+		for {
+			// Prints the current macros, for all the recipes that the user has added (The values are always zero on first iteration).
+			fmt.Printf("Current macros day %d:\n"+
+				"	Calories: 	%.2f\n"+
+				"	Fats: 		%.2f\n"+
+				"	Carbs: 		%.2f\n"+
+				"	Protein: 	%.2f\n", i+1, weekMacros[i].tCalories, weekMacros[i].tFats, weekMacros[i].tCarbohydrates, weekMacros[i].tProteins)
+
+			// Asks the user for what recipes they wish to eat.
+			fmt.Printf("Enter recipe to eat for day %d (or q)>", i+1)
+			_, err := fmt.Scan(&recipeInput)
+			if err != nil {
+				fmt.Println("Error input!")
+				return
+			}
+
+			// When the user has added all the desired recipes for a day, input "p" stops the loop, prints the total macros
+			// for all the added recipes and changes to the next day.
+			if recipeInput == "q" {
+				fmt.Printf("Your final macros are for day %d are:\n", i+1)
+				fmt.Printf(
+					"	Calories: 	%.2f\n"+
+						"	Fats: 		%.2f\n"+
+						"	Carbs: 		%.2f\n"+
+						"	Protein: 	%.2f\n", weekMacros[i].tCalories, weekMacros[i].tFats, weekMacros[i].tCarbohydrates, weekMacros[i].tProteins)
+				break
+			}
+
+			// Converts "recipeInput" to an integer and stores the value in "convertedRecipeInput".
+			convertedRecipeInput, err2 := strconv.Atoi(recipeInput)
+			if err2 != nil {
+				fmt.Println("Conversion error:", err2)
+				return
+			}
+
+			// We add the recipe values to the total macros.
+			convertedRecipeInput--                                                  // We subtract 1 to get the recipe according to the user.
+			if convertedRecipeInput >= 0 && convertedRecipeInput < len(recipeSli) { // Checks that 'recipeIndex' is actually within range of our array.
+				fmt.Println("You added:", recipeSli[convertedRecipeInput].recipeName)
+				weekMacros[i].tCalories += recipeSli[convertedRecipeInput].total.tCalories
+				weekMacros[i].tFats += recipeSli[convertedRecipeInput].total.tFats
+				weekMacros[i].tCarbohydrates += recipeSli[convertedRecipeInput].total.tCarbohydrates
+				weekMacros[i].tProteins += recipeSli[convertedRecipeInput].total.tProteins
+			} else {
+				fmt.Println("Invalid recipe number")
+			}
+
+		}
+	}
+
+	// Prints the total macros for an entire week.
+	for i, macro := range weekMacros {
+		fmt.Printf("Total macros for day %d: \n", i+1)
+		fmt.Printf(
+			"	Calories: 	%.2f\n"+
+				"	Fats: 		%.2f\n"+
+				"	Carbs: 		%.2f\n"+
+				"	Protein: 	%.2f\n", macro.tCalories, macro.tFats, macro.tCarbohydrates, macro.tProteins)
+	}
 }
