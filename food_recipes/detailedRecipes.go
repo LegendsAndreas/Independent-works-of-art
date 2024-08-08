@@ -531,6 +531,7 @@ func editRecipe(repSli []recipe) []recipe {
 				// When we convert 'correctedType' to a rune, we must use the brackets, since the rune is technically
 				// a single character and since 'correctedType' is a string, multiple characters, we have to specify one specific element.
 				repSli[recipeIndex-1].mealType = rune(correctedType[0])
+				break
 			} else {
 				fmt.Println("Input is nothing, try again!")
 				continue
