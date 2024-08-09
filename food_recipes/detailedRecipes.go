@@ -288,20 +288,15 @@ func getMealType() rune {
 }
 
 // getRecipeName prompts the user to enter a recipe name and returns it as a string.
-// It uses bufio.Scanner to read the input from os.Stdin.
-// If there is an error while scanning, it logs a fatal error.
 func getRecipeName() string {
+	var input string
 	fmt.Print("Enter recipe name>")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
-
-	// We use the .Err() method to check if 'scanner' has an error.
-	// You could move the statement: err := scanner.Err(), above the if statement and it would function the same.
-	if err := scanner.Err(); err != nil {
-		log.Fatal("Scanning recipe name error:", err)
+	_, err := fmt.Scan(&input)
+	if err != nil {
+		fmt.Println("Recipe name error:", err)
+		return ""
 	}
 
-	input := scanner.Text()
 	return input
 }
 
@@ -316,14 +311,11 @@ func getIngredients() []ingredient {
 		// Asks the user for ingredient name.
 		var ingre ingredient
 		fmt.Print("Type your ingredient (or q)>")
-		scanner := bufio.NewScanner(os.Stdin)
-		scanner.Scan()
-
-		if err := scanner.Err(); err != nil {
-			log.Fatal("Scanning ingredient name error:", err)
+		_, errr := fmt.Scan(&input)
+		if errr != nil {
+			fmt.Println("Input name error:", errr)
+			return nil
 		}
-
-		input = scanner.Text()
 
 		// Breaks the loop.
 		if input == "q" {
@@ -499,63 +491,21 @@ func editRecipe(repSli []recipe) []recipe {
 
 	// If the user wants to change the meal type.
 	if part == "type" {
-		reader := bufio.NewReader(os.Stdin)
-
-		for {
-			// Asks what the meal type should be changed to.
-			fmt.Print("Correct type to>")
-			correctedType, err3 := reader.ReadString('\n')
-			if err3 != nil {
-				log.Println("Reading input error for editing part of recipe:", err)
-				return nil
-			}
-
-			// Makes sure there is no whitespace.
-			correctedType = strings.TrimSpace(correctedType)
-
-			// If the user enters more than one character, we skip the iteration.
-			if len(correctedType) > 1 {
-				fmt.Println("Too long input, try again!")
-				continue
-			}
-
-			// If the input does not match any of the relevant meal types, we skip the iteration.
-			if correctedType != "B" && correctedType != "L" && correctedType != "D" && correctedType != "S" && correctedType != "K" {
-				fmt.Println("Invalid meal type.")
-				continue
-			}
-
-			// If the input is valid, we set 'repSli[recipeIndex].mealType' to equal to 'correctedType'.
-			// If the user enters nothing (e.g. just presses "enter"), we skip the iteration.
-			if len(correctedType) > 0 {
-				// When we convert 'correctedType' to a rune, we must use the brackets, since the rune is technically
-				// a single character and since 'correctedType' is a string, multiple characters, we have to specify one specific element.
-				repSli[recipeIndex-1].mealType = rune(correctedType[0])
-				break
-			} else {
-				fmt.Println("Input is nothing, try again!")
-				continue
-			}
-		}
+		// We can just reuse the getMealType function.
+		repSli[recipeIndex-1].mealType = getMealType()
 
 		// If the user wants to change the recipe name.
 	} else if part == "name" {
 		fmt.Print("Enter corrected name>")
-		scanner := bufio.NewScanner(os.Stdin)
-		scanner.Scan()
-
-		// We use the .Err() method to check if 'scanner' has an error.
-		// You could move the statement: err := scanner.Err(), above the if statement and it would function the same.
-		if err3 := scanner.Err(); err3 != nil {
-			log.Println("Scanning recipe name error:", err)
+		_, err := fmt.Scan(&repSli[recipeIndex-1].recipeName)
+		if err != nil {
 			return nil
 		}
-
-		repSli[recipeIndex-1].recipeName = scanner.Text()
 
 		// If the user wants to change the ingredients.
 	} else if part == "ingredients" {
 		// ToDo: Add a function that prints every ingredients, either by altering "printSingleRecipe" to work, without asking for input, or making a new function.
+		printIngredients(repSli, recipeIndex)
 
 		// Asks the user for what they want to do with the ingredient.
 		var input string
@@ -927,45 +877,42 @@ func addExtraIngredient(parsedRecipe recipe) []ingredient {
 	fmt.Println("Adding more ingredients...")
 
 	var ingre ingredient
-	fmt.Print("Type your ingredient (or q)>")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
 
-	if err := scanner.Err(); err != nil {
-		log.Fatal("Scanning ingredient name error:", err)
+	fmt.Print("Type your ingredient>")
+	_, err := fmt.Scan(&ingre.name)
+	if err != nil {
+		fmt.Println("Ingredient name error:", err)
+		return nil
 	}
 
-	input := scanner.Text()
-
-	ingre.name = input
 	fmt.Print("Enter ingredient kilograms>")
-	_, err := fmt.Scan(&ingre.kilograms)
+	_, err = fmt.Scan(&ingre.kilograms)
 	if err != nil {
-		log.Fatal("Scanning ingredient kilograms error:", err)
+		fmt.Println("Scanning ingredient kilograms error:", err)
 	}
 
 	fmt.Print("Enter ingredient calories (pr. 100g)>")
 	_, err = fmt.Scan(&ingre.calories)
 	if err != nil {
-		log.Fatal("Scanning ingredient calories error:", err)
+		fmt.Println("Scanning ingredient calories error:", err)
 	}
 
 	fmt.Print("Enter ingredient fats (pr. 100g)>")
 	_, err = fmt.Scan(&ingre.fats)
 	if err != nil {
-		log.Fatal("Scanning ingredient fats error:", err)
+		fmt.Println("Scanning ingredient fats error:", err)
 	}
 
 	fmt.Print("Enter ingredient carbohydrates (pr. 100g)>")
 	_, err = fmt.Scan(&ingre.carbohydrates)
 	if err != nil {
-		log.Fatal("Scanning ingredient carbohydrates error:", err)
+		fmt.Println("Scanning ingredient carbohydrates error:", err)
 	}
 
 	fmt.Print("Enter ingredient protein (pr. 100g)>")
 	_, err = fmt.Scan(&ingre.protein)
 	if err != nil {
-		log.Fatal("Scanning ingredient protein error:", err)
+		fmt.Println("Scanning ingredient protein error:", err)
 	}
 
 	ingre.multiplier = ingre.kilograms / 100
@@ -1003,6 +950,7 @@ func planWeek(recipeSli []recipe) {
 	var fridayMacros totalMacros
 	var satudayMacros totalMacros
 	var sundayMacros totalMacros
+	var totalWeekMacros totalMacros
 	var weekMacros []totalMacros
 	var recipeInput string
 
@@ -1052,8 +1000,13 @@ func planWeek(recipeSli []recipe) {
 				weekMacros[i].tFats += recipeSli[convertedRecipeInput].total.tFats
 				weekMacros[i].tCarbohydrates += recipeSli[convertedRecipeInput].total.tCarbohydrates
 				weekMacros[i].tProteins += recipeSli[convertedRecipeInput].total.tProteins
+				// Adds macros for the total week macros.
+				totalWeekMacros.tCalories += recipeSli[convertedRecipeInput].total.tCalories
+				totalWeekMacros.tFats += recipeSli[convertedRecipeInput].total.tFats
+				totalWeekMacros.tCarbohydrates += recipeSli[convertedRecipeInput].total.tCarbohydrates
+				totalWeekMacros.tProteins += recipeSli[convertedRecipeInput].total.tProteins
 			} else {
-				fmt.Println("Invalid recipe number")
+				fmt.Println("Invalid recipe number!")
 			}
 
 		}
@@ -1067,5 +1020,23 @@ func planWeek(recipeSli []recipe) {
 				"	Fats: 		%.2f\n"+
 				"	Carbs: 		%.2f\n"+
 				"	Protein: 	%.2f\n", macro.tCalories, macro.tFats, macro.tCarbohydrates, macro.tProteins)
+	}
+
+	// Prints the total combined macros for the entire week.
+	fmt.Printf("Total macros for the week:\n")
+	fmt.Printf(
+		"	Calories: 	%.2f\n"+
+			"	Fats: 		%.2f\n"+
+			"	Carbs: 		%.2f\n"+
+			"	Protein: 	%.2f\n", totalWeekMacros.tCalories, totalWeekMacros.tFats, totalWeekMacros.tCarbohydrates, totalWeekMacros.tProteins)
+}
+
+func printIngredients(recipeSli []recipe, index int) {
+	for _, val := range recipeSli[index-1].ingredients {
+		fmt.Printf("   %s: %.2fg\n", val.name, val.kilograms)
+		fmt.Printf("	- Calories pr. 100g: %.2f\n", val.calories)
+		fmt.Printf("	- Proteins pr. 100g: %.2f\n", val.protein)
+		fmt.Printf("	- Fats     pr. 100g: %.2f\n", val.fats)
+		fmt.Printf("	- Carbs    pr. 100g: %.2f\n", val.carbohydrates)
 	}
 }
