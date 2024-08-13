@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -29,15 +30,15 @@ const url = "https://iotwebserver/api/get-device?device=5"
 
 func main() {
 	for {
-		// We send the url for the specific Arduino we want to get the temperature form.
+		// We send the url for the specific Arduino we want to get the temperature and time from.
 		result := getTimeAndTempt(url)
 
-		// We then print "result.Data.TempReading.Value", which is equal to: [2][tempt]: value: "24.69" from the JSON body.
+		// We print "result.Data.TempReading.Value", which is equal to: [2][tempt]: value: "24.69" from the JSON body.
 		/* Developer tool for seeing the actual temperature and time.
 		fmt.Println("The time is:", int64(result.Data.TempReading.Time))
 		fmt.Println("The value is:", result.Data.TempReading.Value)*/
 
-		// The name of the Excel file will be: Arduino Temperaturer [DATO]. A new Excel file will then be created, once a
+		// The name of the Excel file will be: Arduino Tempe [DATO]. A new Excel file will then be created, once a
 		// new day occurs, because the name will be different.
 		currentTime := time.Now()
 		formattedTime := currentTime.Format("2006-01-02")
@@ -65,8 +66,13 @@ func main() {
 				fmt.Println("Excel file updated successfully!")
 			}
 		}
-		// We want the program to execute every 30 minutes, so we add a sleep timer of 30 minutes.
-		time.Sleep(time.Minute * 30)
+		// We want the program to execute every 30 minutes, so we add a sleep timer of 30 minutes in total.
+		fmt.Println("See you 30 minutes!")
+		time.Sleep(time.Minute * 15)
+		fmt.Println("See you in 15!")
+		time.Sleep(time.Minute * 14)
+		fmt.Println("See you in 1 minute!")
+		time.Sleep(time.Minute * 1)
 	}
 
 }
@@ -133,7 +139,8 @@ func createExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 	}
 
 	// Set value in the first cell, B1
-	err4 := f.SetCellValue("Sheet1", "B1", arduinoTemp)
+	arduinoTempFloat, _ := strconv.ParseFloat(arduinoTemp, 64)
+	err4 := f.SetCellValue("Sheet1", "B1", arduinoTempFloat)
 	if err4 != nil {
 		fmt.Print("Error setting value to sheet B1")
 		return err
@@ -187,16 +194,18 @@ func updateExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 	// Append time and temperature to the next empty row
 	err = f.SetCellValue(sheetName, fmt.Sprintf("A%d", nextRow), formattedTime)
 	if err != nil {
-		fmt.Println("Error setting value to sheet A#", err)
+		fmt.Println("Error setting value to sheet A#")
 		return err
 	}
-	err = f.SetCellValue(sheetName, fmt.Sprintf("B%d", nextRow), arduinoTemp)
+	// We convert the arduinoTemp value to a float.
+	arduinoTempFloat, _ := strconv.ParseFloat(arduinoTemp, 64)
+	err = f.SetCellValue(sheetName, fmt.Sprintf("B%d", nextRow), arduinoTempFloat)
 	if err != nil {
-		fmt.Println("Error setting value to sheet B#", err)
+		fmt.Println("Error setting value to sheet B#")
 		return err
 	}
 
-	/* // The problem here, is that on multiple execution, it adds an additional chart. So manually inserting it is best atm.
+	/* The problem here, is that on multiple execution, it creates an additional chart. So manually inserting it is best atm.
 	// But, you can add a macro that creates it, but that will be for another day.
 		// Adding chart
 		// Define chart ranges dynamically
