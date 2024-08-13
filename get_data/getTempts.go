@@ -24,49 +24,59 @@ type Response struct {
 	} `json:"data"`
 }
 
-// The url for Arduino 5.
+// The url for Arduino 5, room 307.
 const url = "https://iotwebserver/api/get-device?device=5"
 
 func main() {
-	// We send the url for the specific Arduino we want to get the temperature form.
-	result := getTimeAndTempt(url)
+	for {
+		// We send the url for the specific Arduino we want to get the temperature form.
+		result := getTimeAndTempt(url)
 
-	// We then print "result.Data.TempReading.Value", which is equal to: [2][tempt]: value: "24.69" from the JSON body.
-	fmt.Println("The time is:", int64(result.Data.TempReading.Time))
-	fmt.Println("The value is:", result.Data.TempReading.Value)
+		// We then print "result.Data.TempReading.Value", which is equal to: [2][tempt]: value: "24.69" from the JSON body.
+		/* Developer tool for seeing the actual temperature and time.
+		fmt.Println("The time is:", int64(result.Data.TempReading.Time))
+		fmt.Println("The value is:", result.Data.TempReading.Value)*/
 
-	// The name of the Excel file will be: Arduino Temperaturer [DATO]. A new Excel file will then be created, once a
-	// new day occurs, because the name will be different.
-	currentTime := time.Now()
-	formattedTime := currentTime.Format("2006-01-02")
-	excelName := "Arduino Temperaturer " + formattedTime
+		// The name of the Excel file will be: Arduino Temperaturer [DATO]. A new Excel file will then be created, once a
+		// new day occurs, because the name will be different.
+		currentTime := time.Now()
+		formattedTime := currentTime.Format("2006-01-02")
+		excelName := "Arduino Temp " + formattedTime
 
-	// We check if the Excel file exists. If it does not, we create it and add one row of elements along the way.
-	_, err := os.Stat(excelName + ".xlsx")
-	if os.IsNotExist(err) {
-		// We create the Excel file, and store the error message in "err".
-		err = createExcel(excelName, result.Data.TempReading.Time, result.Data.TempReading.Value)
-		if err != nil {
-			fmt.Println("An error occurred:", err)
-			os.Exit(1)
+		// We check if the Excel file exists. If it does not, we create it and add one row of elements along the way.
+		_, err := os.Stat(excelName + ".xlsx")
+		if os.IsNotExist(err) {
+			// We create the Excel file, and store the error message in "err".
+			err = createExcel(excelName, result.Data.TempReading.Time, result.Data.TempReading.Value)
+			if err != nil {
+				fmt.Println("Creating excel error:", err)
+				os.Exit(1)
+			} else {
+				fmt.Println("Excel file created successfully!")
+			}
+
+			// If it does exist, we update the file.
 		} else {
-			fmt.Println("Excel file created successfully!")
+			err = updateExcel(excelName, result.Data.TempReading.Time, result.Data.TempReading.Value)
+			if err != nil {
+				fmt.Println("An error occurred:", err)
+				os.Exit(1)
+			} else {
+				fmt.Println("Excel file updated successfully!")
+			}
 		}
-
-		// If it does exist, we update the file.
-	} else {
-		err = updateExcel(excelName, result.Data.TempReading.Time, result.Data.TempReading.Value)
-		if err != nil {
-			fmt.Println("An error occurred:", err)
-			os.Exit(1)
-		} else {
-			fmt.Println("Excel file updated successfully!")
-		}
+		// We want the program to execute every 30 minutes, so we add a sleep timer of 30 minutes.
+		time.Sleep(time.Minute * 30)
 	}
 
 }
 
+// getTimeAndTempt retrieves the temperature and time reading from a given URL.
+// It sends a GET request to the URL, reads the response body, unmarshals the JSON data
+// into a Response struct, and returns the struct.
+// If any error occurs during the process, it prints the error and returns an empty Response struct.
 func getTimeAndTempt(url string) Response {
+	// The get request for the URL.
 	response, err := http.Get(url)
 	if err != nil {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
@@ -96,25 +106,33 @@ func getTimeAndTempt(url string) Response {
 
 }
 
+// createExcel creates a new Excel file with the given name and adds a sheet named "Sheet1".
+// It sets the value of the first cell (A1) to the formatted time, and the value of the second cell (B1) to
+// the arduino temperature. It sets the active sheet to "Sheet1" and saves the file as the provided
+// name appended with ".xlsx". It returns an error if any error occurs during the process.
 func createExcel(excelName string, arduinoTime float64, arduinoTemp string) error {
 	// Create a new Excel file
 	f := excelize.NewFile()
 
 	// Create a new sheet
-	index, _ := f.NewSheet("Sheet1")
+	index, err7 := f.NewSheet("Sheet1")
+	if err7 != nil {
+		fmt.Println("Adding sheet error")
+		return err7
+	}
 
 	// Changes the time to a simplified version: "HH:MM".
 	currentTime := time.Unix(int64(arduinoTime), 0)
 	formattedTime := currentTime.Format("15:04")
 
-	// Set value in cell A1
+	// Set value in the first cell, A1
 	err := f.SetCellValue("Sheet1", "A1", formattedTime)
 	if err != nil {
 		fmt.Print("Error setting value to sheet A1")
 		return err
 	}
 
-	// Set value in cell B1
+	// Set value in the first cell, B1
 	err4 := f.SetCellValue("Sheet1", "B1", arduinoTemp)
 	if err4 != nil {
 		fmt.Print("Error setting value to sheet B1")
@@ -140,6 +158,8 @@ func createExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 	return nil
 }
 
+// The updateExcel function updates an existing Excel file by opening it, finding the next empty row,
+// and appending the given time and temperature values to that row. It then saves and closes the file.
 func updateExcel(excelName string, arduinoTime float64, arduinoTemp string) error {
 	// Opens the file
 	f, err := excelize.OpenFile(excelName + ".xlsx")
@@ -176,6 +196,32 @@ func updateExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 		return err
 	}
 
+	/* // The problem here, is that on multiple execution, it adds an additional chart. So manually inserting it is best atm.
+	// But, you can add a macro that creates it, but that will be for another day.
+		// Adding chart
+		// Define chart ranges dynamically
+		categoriesRange := fmt.Sprintf("Sheet1!$A$1:$A$%d", nextRow-1)
+		valuesRange := fmt.Sprintf("Sheet1!$B$1:$B$%d", nextRow-1)
+
+		// Add chart to sheet
+		if err = f.AddChart("Sheet1", "A1", &excelize.Chart{
+			Type: excelize.Line,
+			Series: []excelize.ChartSeries{
+				{
+					Name:       "Temperaturer",
+					Categories: categoriesRange,
+					Values:     valuesRange,
+				}},
+			Title: []excelize.RichTextRun{
+				{
+					Text: "Temperaturer for lokale 309",
+				},
+			},
+		}); err != nil {
+			fmt.Println(err)
+			return err
+		}*/
+
 	// Save the file
 	err = f.Save()
 	if err != nil {
@@ -186,6 +232,7 @@ func updateExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 	// Closes the Excel file and checks for error
 	err = f.Close()
 	if err != nil {
+		fmt.Println("Error closing the file.")
 		return err
 	}
 
@@ -193,6 +240,7 @@ func updateExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 	return nil
 }
 
+// Maybe in the future...
 func createChart(excelName string) error {
 
 	return nil
