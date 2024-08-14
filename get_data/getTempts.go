@@ -88,6 +88,7 @@ func getTimeAndTempt(url string) Response {
 		fmt.Printf("The HTTP request failed with error %s\n", err)
 	}
 
+	// Checks for error, and closes it at the end of the function.
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -129,7 +130,7 @@ func createExcel(excelName string, arduinoTime float64, arduinoTemp string) erro
 
 	// Changes the time to a simplified version: "HH:MM".
 	currentTime := time.Unix(int64(arduinoTime), 0)
-	formattedTime := currentTime.Format("15:04")
+	formattedTime := currentTime.Format("15:04") // You might have to changes the numbers here, depending on the timezone.
 
 	// Set value in the first cell, A1
 	err := f.SetCellValue("Sheet1", "A1", formattedTime)
