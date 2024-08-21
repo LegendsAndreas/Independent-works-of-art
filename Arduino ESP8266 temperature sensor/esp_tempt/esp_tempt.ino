@@ -78,7 +78,7 @@ void loop(void){
 
   // We wait 29 minutes. The program that extract the information, does it every 30 minutes, so by taking 1 less minute to compute the temperature,
   // allows us to be sure that we always get a new temperature
-  delay(MINUTE*30);
+  delay(MINUTE*29);
 }
 
 // Establishes a connection to the selected WiFi.
