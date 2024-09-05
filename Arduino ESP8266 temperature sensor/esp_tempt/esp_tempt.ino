@@ -2,7 +2,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <ESP8266WiFi.h>
-#include <WiFiClientSecure.h>
 #include <ArduinoMqttClient.h>
 #include "credentials.h"
 
@@ -39,9 +38,6 @@ void setup(void)
   // Connects to WiFi
   connectToWiFi();
 
-  // Connects to MQTT Server
-  connectToMQTT();
-
   // Start up the temperature library
   sensors.begin();
 }
@@ -53,9 +49,10 @@ void loop(void){
     connectToWiFi();
   }
 
-  // call poll() regularly to allow the library to send MQTT keep alive which avoids being disconnected by the broker
-  //connectToMQTT();
-  mqttClient.poll();
+  // Connects to the MQTT server.
+  // After a certain amount of time, you will automatically be disconnect from the MQTT server, so we dont have to actually write a disconnect statement.
+  // The "connectToMQTT" function, also checks if we are already connected.
+  connectToMQTT();
 
   // Gets the temperature.
   const double temperature = getTemperature();
@@ -63,22 +60,15 @@ void loop(void){
   // Sends temperature to the MQTT server
   sendTopic(temperature);
 
-  // Disconnects from the MQTT, since there are 29 minutes where it does nothing
-  //Serial.println("Disconnecting from the MQTT server, see ya in 29 mins!")
+  // Disconnects from the WiFi. We disconnect so that we dont use unnecessary power to stay connected to the WiFi.
+  // If we do not have this short delay, the MQTT server will not be updated. I believe this is because we disconnect from the internet, BEFORE, we fully send the message to our MQTT server.
+  delay(5000);
+  WiFi.disconnect();
+  Serial.println("Disconnecting from the WiFi, see ya in 25 mins!");
 
-  // PROBLEM (i think): Whenever the disconnect code is not commented out, it does not update the MQTT server.
-  // Maybe, it is because it disconnects before the message can be really send. Maybe just adding a delay will work...
-  // Disconnects form the WiFi. You cant ONLY disconnect from the WiFi
-  //WiFi.disconnect();
-  //Serial.println("Disconnecting from the WiFi, see ya in 29 mins!")
-
-  // Add threshold that prints the temperature right away, if it raises by a certain amount
-
-  // Page for changing WiFi, MQTT and such.
-
-  // We wait 29 minutes. The program that extract the information, does it every 30 minutes, so by taking 1 less minute to compute the temperature,
+  // We wait 25 minutes. The program that extract the information, does it every 30 minutes, so by taking 5 less minute to compute the temperature,
   // allows us to be sure that we always get a new temperature
-  delay(MINUTE*29);
+  delay(MINUTE*25);
 }
 
 // Establishes a connection to the selected WiFi.
@@ -117,12 +107,17 @@ const double getTemperature(void) {
 
 // Connects to the MQTT broker
 void connectToMQTT(void) {
+  Serial.print("Connecting to MQTT broker: ");
+  Serial.println(broker);
+
   mqttClient.setUsernamePassword(mqtt_user, mqtt_pass);
   if (!mqttClient.connect(broker, port)) {
     Serial.print("MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
     while (1);
   }
+
+
 }
 
 // Sends a topic to a MQTT broker/server
