@@ -1,0 +1,3 @@
+C:/Users/A/Desktop/Coding/C programming/c_split/cmake-build-debug/CMakeFiles/c_split.dir
+C:/Users/A/Desktop/Coding/C programming/c_split/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/A/Desktop/Coding/C programming/c_split/cmake-build-debug/CMakeFiles/rebuild_cache.dir
