@@ -103,25 +103,3 @@ subString splitString(const char *words, const char *splicer) {
 
     return result;
 }
-
-/*
-#include <stdio.h>
-#include "string.h"
-#include "stdlib.h"
-
-typedef struct {
-    char word[100];
-}str;
-
-str* splitString(char *words, const char *splicer);
-
-int main(void) {
-    char *words = "Hello gamer!";
-    str *subStrings = splitString(words, " ");
-
-    printf("%llu\n", sizeof(*subStrings)/ sizeof(str));
-
-    free(subStrings);
-
-    return 0;
-}
