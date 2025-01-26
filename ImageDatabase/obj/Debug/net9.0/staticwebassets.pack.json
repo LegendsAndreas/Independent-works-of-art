@@ -1,0 +1,61 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\obj\\Debug\\net9.0\\scopedcss\\projectbundle\\ImageDatabase.bundle.scp.css",
+      "PackagePath": "staticwebassets\\ImageDatabase.qt6x8ngsp6.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\Images\\20250123_195226.jpg",
+      "PackagePath": "staticwebassets\\Images\\20250123_195226.jpg"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\Images\\20250123_202152.jpg",
+      "PackagePath": "staticwebassets\\Images\\20250123_202152.jpg"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\Images\\20250123_203018.jpg",
+      "PackagePath": "staticwebassets\\Images\\20250123_203018.jpg"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\Images\\20250123_203020.jpg",
+      "PackagePath": "staticwebassets\\Images\\20250123_203020.jpg"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\bootstrap\\bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\A\\Desktop\\Coding\\C#\\ImageDatabase\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.ImageDatabase.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.ImageDatabase.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.build.ImageDatabase.props",
+      "PackagePath": "build\\ImageDatabase.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildMultiTargeting.ImageDatabase.props",
+      "PackagePath": "buildMultiTargeting\\ImageDatabase.props"
+    },
+    {
+      "Id": "obj\\Debug\\net9.0\\staticwebassets\\msbuild.buildTransitive.ImageDatabase.props",
+      "PackagePath": "buildTransitive\\ImageDatabase.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

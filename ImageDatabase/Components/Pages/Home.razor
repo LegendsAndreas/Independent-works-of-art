@@ -1,0 +1,133 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using Npgsql
+
+<PageTitle>Home</PageTitle>
+
+<EditForm Model="@imageId" style="margin: 10px">
+    <label class="form-label fw-bold">Set Image ID</label>
+    <InputNumber class="form-control" @bind-Value="@imageId"/>
+
+    <button type="button" class="btn btn-primary" @onclick="HandleGettingImage">Get image</button>
+</EditForm>
+
+<EditForm Model="@imageName" style="margin: 10px">
+    <div>
+        <label class="form-label fw-bold">Set image name</label>
+        <InputText class="form-control" @bind-Value="@imageName"
+                   placeholder="Leave empty if you want to use the images file name"/>
+    </div>
+
+    <label class="btn btn-primary" for="fileInput">Insert Image</label>
+    <InputFile id="fileInput" OnChange="HandleInsertingImage" multiple style="display: none"/>
+</EditForm>
+
+
+@code{
+
+    int imageId;
+    string imageName = "";
+    string imagePath = "";
+
+    string connectionString =
+        "Host=192.168.0.100;Port=5432;Database=postgres;Username=postgres;Password=postgrespass;sslmode=require;";
+
+    private void HandleGettingImage()
+    {
+        Console.WriteLine("Handling getting image...");
+        var outputDirectory = @"C:\Users\A\Desktop\Coding\C#\ImageDatabase\wwwroot\Images";
+        try
+        {
+            using (var connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // Retrieve the image data by ID
+                const string query = "SELECT name, data FROM images WHERE id = @id";
+                using (var command = new NpgsqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", imageId);
+
+                    // Use a DataReader to retrieve both the name and binary data
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            string imageName = reader.GetString(0); // Retrieve the 'name' column (index 0)
+                            byte[] imageBytes = reader["data"] as byte[]; // Retrieve the 'data' column (index 1)
+
+                            if (imageBytes != null)
+                            {
+                                string outputPath = Path.Combine(outputDirectory, imageName);
+
+                                // Write the image back to a file
+                                File.WriteAllBytes(outputPath, imageBytes);
+                                Console.WriteLine($"Image saved to: {outputPath}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Image not found.");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+            Console.WriteLine("StackTrace: " + ex.StackTrace);
+        }
+    }
+
+    // Note: This method also works with GIFs, even though you cannot view GIFs in the editor.
+    private async Task HandleInsertingImage(InputFileChangeEventArgs imageFiles)
+    {
+        Console.WriteLine("Handling inserting image...");
+
+        foreach (var image in imageFiles.GetMultipleFiles())
+        {
+            if (!image.ContentType.Contains("image"))
+            {
+                Console.WriteLine($"\"{image.ContentType}\" is not allowed");
+                // Popup message saying so.
+                return;
+            }
+
+            try
+            {
+                byte[] imageBytes;
+                await using (var stream = image.OpenReadStream(maxAllowedSize: 10485760)) // 10 MB.
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(memoryStream);
+                        imageBytes = memoryStream.ToArray();
+                    }
+                }
+
+                await using (var connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+                    const string query = "INSERT INTO images (name, data) VALUES (@name, @data)";
+                    await using (var command = new NpgsqlCommand(query, connection))
+                    {
+                        // We have to add the file extension, otherwise the file we get out of the database will be corrupted.
+                        // The simplest way to get the accurate extension is my splitting up the content type.
+                        command.Parameters.AddWithValue("@name", imageName != "" ? imageName + $".{image.ContentType.Split('/')[1]}" : image.Name);
+                        command.Parameters.AddWithValue("@data", imageBytes);
+
+                        var rowsAffected = command.ExecuteNonQuery();
+                        Console.WriteLine($"{rowsAffected} row(s) inserted.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error setting image: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+        }
+    }
+
+}

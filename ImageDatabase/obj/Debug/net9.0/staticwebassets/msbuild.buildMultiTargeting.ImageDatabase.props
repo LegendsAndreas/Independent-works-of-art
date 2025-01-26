@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ImageDatabase.props" />
+</Project>
